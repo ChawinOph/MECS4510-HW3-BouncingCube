@@ -1,3 +1,4 @@
+
 classdef Simulator
     %Robot Summary of this class goes here
     %   Detailed explanation goes here
@@ -21,4 +22,3 @@ classdef Simulator
         end
     end
 end
-
