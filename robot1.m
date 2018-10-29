@@ -88,6 +88,22 @@ classdef robot1
             end
         end
         
+        function pe = calcPE(obj, g)
+            my_masses = obj.masses;
+            pe = 0;
+            for i = 1:length(my_masses)
+                pe = pe + my_masses(i).mass * g(3) * my_masses(i).p(3);
+            end
+        end
+        
+        function ke = calcKE(obj)
+            my_masses = obj.masses;
+            ke = 0;
+            for i = 1:length(my_masses)
+                ke = ke + 0.5*my_masses(i).mass*(my_masses(i).v(1)^2 + ...
+                    my_masses(i).v(2)^2 + my_masses(i).v(2)^2);
+            end
+        end
     end
 end
 
