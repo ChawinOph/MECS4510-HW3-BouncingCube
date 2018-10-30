@@ -3,8 +3,8 @@ classdef spring < handle
     %   Detailed explanation goes here
     
     properties
-        L_0 %Double. Original rest length[meters]
-        k %Double. Stiffness [Newtons/meter]
+        L_0 % Double. Original rest length[meters]
+        k % Double. Stiffness [Newtons/meter]
         m % Int Array. Index of the two masses it connects to.
         m_1
         m_2 % Int. Index of the second mass it connects to

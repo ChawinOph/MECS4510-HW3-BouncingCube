@@ -6,7 +6,6 @@ classdef robot1 < handle
         masses % Array of point_mass objects
         springs % Array of spring objects
         rho % Double. Velocity damping parameter (0<p<1)
-        offset % 
     end
     
     methods
@@ -21,11 +20,35 @@ classdef robot1 < handle
                 else
                     disp('Not a valid combination of springs and masses');
                 end
-            else % create 8 point masses and 28 springs to form a cube
-               
+            else % automically create 8 point masses and 28 springs to form a cube
+                % create 8 point masses
+                mass = 0.1; % m
+                cube_size = 0.1; % m
+                z_offset = 0.25; % m
+                k = 1000; % N/m
                 
+                % create position of masses in the cube
+                p = ones(8, 3)/2;
+                p(1:4, 3) = 0;
+                p([2:3,6:7], 1) = -p([2:3,6:7], 1);
+                p([3:4,7:8], 2) = -p([3:4,7:8], 2);
+                p = p*cube_size;
+                p(:, 3) = 2*p(:, 3) + z_offset;
+                
+                obj.masses = point_mass(repmat(mass, size(p,1), 1), p);
+                
+                % create springs based the available point masses
+                comb_indcs = combnk(1:length(obj.masses), 2);
+                L_0 = zeros(size(comb_indcs, 1), 1);
+                K = k*ones(size(comb_indcs, 1), 1); 
+                for i = 1:length(comb_indcs)
+                    pair_indcs = comb_indcs(i,:);
+                    L_0(i) = vecnorm(obj.masses(pair_indcs(1)).p - obj.masses(pair_indcs(2)).p);
+                end
+                obj.springs = spring(L_0, K, comb_indcs);               
             end
         end
+        
         % setters
         function obj = updateP(obj, p)
             %UPDATEP Updates the position of all masses

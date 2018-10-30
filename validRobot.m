@@ -4,7 +4,7 @@ function valid = validRobot(point_masses, springs)
 %   However, some masses may not be connected to springs
     springsConnect = [springs.m];
     
-    if isempty(find(springsConnect>length(point_masses),1))
+    if isempty(find(springsConnect > length(point_masses),1))
         valid = 1;
     else
         valid = 0;
