@@ -1,4 +1,4 @@
-classdef Simulator
+classdef simulator < handle
     %UNTITLED Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -6,11 +6,11 @@ classdef Simulator
         bots % Array of type robot1. Represents the bodies in the system
         dt % Double. Length of one time-step (in seconds)
         g % Double array. Gravitational acceleration (m/s^2)
-%       rho % Double. Global velocity damping parameter (0<p<1)
+        rho % Double. Global velocity damping parameter (0<p<1)
     end
     
     methods
-        function obj = Simulator(bots, dt, g, rho)
+        function obj = simulator(bots, dt, g, rho)
             %SIMULATOR Construct an instance of simulator class
             %   Detailed explanation goes here
             if nargin>0

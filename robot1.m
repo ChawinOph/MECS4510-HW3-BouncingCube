@@ -1,4 +1,4 @@
-classdef robot1
+classdef robot1 < handle
     %ROBOT This class represents 
     %   It's essentially a body consisting of masses connected by springs
     
@@ -6,6 +6,7 @@ classdef robot1
         masses % Array of point_mass objects
         springs % Array of spring objects
         rho % Double. Velocity damping parameter (0<p<1)
+        offset % 
     end
     
     methods
@@ -20,6 +21,9 @@ classdef robot1
                 else
                     disp('Not a valid combination of springs and masses');
                 end
+            else % create 8 point masses and 28 springs to form a cube
+               
+                
             end
         end
         % setters

@@ -1,4 +1,4 @@
-classdef spring
+classdef spring < handle
     %SPRING This class models a spring
     %   Detailed explanation goes here
     

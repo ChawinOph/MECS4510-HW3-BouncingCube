@@ -1,5 +1,5 @@
-classdef point_mass
-    %MASS This class models a point mass
+classdef point_mass < handle
+    %point_mass This class models a point mass
     %   Detailed explanation goes here
     
     properties
@@ -11,7 +11,7 @@ classdef point_mass
     
     methods
         % Constructor
-        function obj = point_mass(mass,p, v, a)
+        function obj = point_mass(mass, p, v, a)
             %POINT_MASS Construct an instance of point_mass
             %   Detailed explanation goes here
             if nargin>1
