@@ -1,4 +1,4 @@
-classdef simulator
+classdef Simulator
     %UNTITLED Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -10,7 +10,7 @@ classdef simulator
     end
     
     methods
-        function obj = simulator(bots, dt, g, rho)
+        function obj = Simulator(bots, dt, g, rho)
             %SIMULATOR Construct an instance of simulator class
             %   Detailed explanation goes here
             if nargin>0
