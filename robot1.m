@@ -25,7 +25,7 @@ classdef robot1 < handle
                 mass = 0.1; % m
                 cube_size = 0.1; % m
                 z_offset = 0.1; % m
-                k = 1000; % N/m
+                k = 500; % N/m
                 
                 % create positions of masses in the cube
                 p = ones(8, 3)/2;
@@ -74,26 +74,40 @@ classdef robot1 < handle
             [obj.masses.a] = A{:};
         end
         
-        function forces = calcForces(obj, g, f)
+        function forces = calcForces(obj, g, f_ext)
             %CALCFORCES Calculates the vector forces on each mass
             %   g is the gravitational constant (1x3 vector)
             %   f are additional forces on the nodes (num_masses x 3 array)
-            my_masses = obj.mass;
+            my_masses = obj.masses;
             my_springs = obj.springs;
-            forces = zeros(length(my_masses));
+            forces = zeros(length(my_masses), 3);
             for i = 1:length(my_masses)
-                forces(i,:) = my_masses(i).mass * g + f(i,:);
+                % add gravitational force
+                forces(i,:) = my_masses(i).mass * g + f_ext(i,:);
+                % go through all springs in the robot
                 for j = 1:length(my_springs)
-                    if my_springs(j).m == i
-                        spring_l = sqrt(my_masses(my_springs(j).m(1)).p.^2 ...
-                            + my_masses(my_springs(j).m(2)).p.^2);
-                        spring_f = my_springs(j).k*(spring_l-my_springs(j).L_0);
-                        spring_v = spring_f*(my_masses(my_springs(j).m(1)).p...
-                            - my_masses(my_springs(j).m(2)).p)/spring_l;
+                    % check if the current mass index is in the current
+                    % spring
+                    if ismember(i, my_springs(j).m)
+                        
+                        % find the current spring length L
+                        pair_indcs = my_springs(j).m;      
+                        vector = my_masses(pair_indcs(1)).p - my_masses(pair_indcs(2)).p;
+                        L = vecnorm(vector);
+                        spring_f = my_springs(j).k*(L - my_springs(j).L_0);
+                        
+                        % create the force vector with correct direction
+                        if my_springs(j).m(1) == i
+                            spring_v = -spring_f*vector/L;
+                        elseif my_springs(j).m(2) == i
+                            spring_v = spring_f*vector/L;
+                        end
+                        
+                        % add more forces to the mass
                         forces(i,:) = forces(i,:) + spring_v;
                     end
                 end
-            end
+            end           
         end
         
         function [a, v, p] = calcKin(obj, f, dt)
@@ -111,7 +125,9 @@ classdef robot1 < handle
             for i = 1:length(my_masses)
                 a(i,:) = f(i,:) / my_masses(i).mass;
                 v(i,:) = my_masses(i).v + my_masses(i).a*dt;
-                p(i,:) = my_masses(i).p + my_masses(i).v*dt + 0.5*my_masses(i).a*dt^2;
+                % a is not constant, so we cannot use the 0.5*a*t^2 term
+                %                 p(i,:) = my_masses(i).p + my_masses(i).v*dt + 0.5*my_masses(i).a*dt^2;
+                p(i,:) = my_masses(i).p + my_masses(i).v*dt;
             end
         end
         
