@@ -24,10 +24,10 @@ classdef robot1 < handle
                 % create 8 point masses
                 mass = 0.1; % m
                 cube_size = 0.1; % m
-                z_offset = 0.25; % m
+                z_offset = 0.1; % m
                 k = 1000; % N/m
                 
-                % create position of masses in the cube
+                % create positions of masses in the cube
                 p = ones(8, 3)/2;
                 p(1:4, 3) = 0;
                 p([2:3,6:7], 1) = -p([2:3,6:7], 1);
