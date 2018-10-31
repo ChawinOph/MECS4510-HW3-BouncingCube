@@ -3,8 +3,8 @@ classdef simulator < handle
     %   Detailed explanation goes here
     properties (Constant)
         g = [0, 0, -9.81]; % Double array. Gravitational acceleration (m/s^2)
-        rho = 0.995; % Double. Global velocity damping parameter (0<p<1)
-        k_ground = 500; % equal to k_spring
+        rho = 1; % Double. Global velocity damping parameter (0<p<1)
+        k_ground = 2500; % contact force constant
     end
     
     properties
@@ -28,29 +28,43 @@ classdef simulator < handle
             
         end
         
-        function frames = simulate(obj, time)
+        function [frames, K, V] = simulate(obj, time)
             % SIMULATE run the simulation over a period of 'time' in
             % seconds and record the animation for playback in 'frames'
-            figure;
+            fig = figure;
             % crate slider for playback
            
             T = 0: obj.dt : time;
 %              u = uicontrol('Style','slider','Position',[10 50 20 340],...
-%                 'Min',1,'Max',16,'Value',1);
-            k = 0;
-            for t = T
-                obj.step()                          
+%                 'Min',1,'Max',16,'Value',1);         
+            
+            K = zeros(1, length(T)); % kinetic energy
+            V = zeros(1, length(T)); % potential energy
+            
+            k = 0; % frame counter
+            
+            for i = 1:length(T)
+                
+                t = T(i);
+                [ke, pe] = obj.step();   
+                
+                 V(i) = pe;
+                 K(i) = ke;
+                
                 % desired frame rate is 25 frame/s meaning meaning we need one
                 % frame every other 0.04 sec (every other 0.04/dt frames)
-                if mod(t, 0.01) == 0
+                if mod(t, 0.04) == 0
                     k = k + 1;
+                    clf;
                     obj.drawRobots();
-                    frames(k) = getframe; %#ok<AGROW>
+                    text(0.4, 0.4, 0.4, ['t = ' num2str(t) ' sec']);
+                    drawnow
+                    frames(k) = getframe(fig);  %#ok<AGROW>
                 end
             end          
         end
         
-        function step(obj)
+        function [ke, pe] = step(obj)
             % loop through all robots
             for bot_no = 1:length(obj.bots)
                 % calculate contact forces based on mass positions
@@ -63,6 +77,9 @@ classdef simulator < handle
                     contact_inds = find(mass_pos_z < 0);
                     % calculate the restoration force
                     f_contact(contact_inds, 3) = -obj.k_ground*mass_pos_z(contact_inds);
+                    pe_contact = 1/2*obj.k_ground*sum(abs(mass_pos_z(contact_inds).^2));
+                else
+                    pe_contact = 0;
                 end
                 
                 f_ext = f_contact;
@@ -74,15 +91,17 @@ classdef simulator < handle
                 % update all kinematic variables
                 obj.bots(bot_no).updateP(p);
                 obj.bots(bot_no).updateV(obj.rho*v);
-                obj.bots(bot_no).updateA(a);              
+                obj.bots(bot_no).updateA(a);        
+                
+                % get energy
+                ke = obj.bots(bot_no).calcKE();
+                pe = obj.bots(bot_no).calcPE(obj.g) + pe_contact;
             end
         end
         
         %% VISUALIZATION
         function drawRobots(obj)
-            % clear current robots
-            cla
-            
+              
             % loop through all robots
             for bot_no = 1:length(obj.bots)
                 % get position of all point masses
@@ -101,11 +120,13 @@ classdef simulator < handle
             end
             
             % reframe the axes
-            axis equal;
-            grid on; grid minor;
+            axis equal; grid on;
             xlim([-0.5 0.5]);
             ylim([-0.5 0.5]);
-            zlim([0 0.5]);
+            zlim([-0.02 0.5]);
+            xlabel('x (m)')
+            ylabel('y (m)')
+            zlabel('z (m)')
         end
         
     end
