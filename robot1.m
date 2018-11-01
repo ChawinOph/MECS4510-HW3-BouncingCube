@@ -25,7 +25,9 @@ classdef robot1 < handle
                 % create 8 point masses
                 mass = 0.1; % m
                 cube_size = 0.1; % m
-                z_offset = 0.3; % m          
+                z_offset = 0.3; % m 
+%                 v_init = [0.5, 0, 0]; % m/s
+                v_init = [0, 0, 0];
                
                 % create positions of masses in the cube
                 p = ones(8, 3)/2;
@@ -39,7 +41,7 @@ classdef robot1 < handle
                 p = R*p'; % tilt all masses
                 p = p' + [0 0 z_offset]; % add the offset; 
                 
-                obj.masses = point_mass(repmat(mass, size(p,1), 1), p);
+                obj.masses = point_mass(repmat(mass, size(p,1), 1), p, repmat(v_init, 8, 1));
                 
                 % create springs based the available point masses
                 comb_indcs = combnk(1:length(obj.masses), 2);

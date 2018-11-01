@@ -3,7 +3,7 @@ classdef simulator < handle
     %   Detailed explanation goes here
     properties (Constant)
         g = [0, 0, -9.81]; % Double array. Gravitational acceleration (m/s^2)
-        rho = 0.999; % Double. Global velocity damping parameter (0<p<1)
+        rho = 1; % Double. Global velocity damping parameter (0<p<1)
         k_ground = 2500; % contact force constant
     end
     
@@ -31,7 +31,7 @@ classdef simulator < handle
         function [frames, K, V] = simulate(obj, time)
             % SIMULATE run the simulation over a period of 'time' in
             % seconds and record the animation for playback in 'frames'
-            fig = figure;
+            fig = figure('rend','painters','pos',[10 10 900 600]);
             % crate slider for playback
             
             T = 0: obj.dt : time;
