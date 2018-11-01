@@ -4,7 +4,7 @@ clear
 close all
 
 % create an instance of simulator with a robot object
-dt = 0.0005; 
+dt = 0.0001; 
 cube = robot1();
 sim = simulator(cube(), dt);
 run_time = 5; % seconds

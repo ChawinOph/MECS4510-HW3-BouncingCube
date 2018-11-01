@@ -3,7 +3,7 @@ classdef simulator < handle
     %   Detailed explanation goes here
     properties (Constant)
         g = [0, 0, -9.81]; % Double array. Gravitational acceleration (m/s^2)
-        rho = 1; % Double. Global velocity damping parameter (0<p<1)
+        rho = 0.999; % Double. Global velocity damping parameter (0<p<1)
         k_ground = 2500; % contact force constant
     end
     
@@ -33,10 +33,10 @@ classdef simulator < handle
             % seconds and record the animation for playback in 'frames'
             fig = figure;
             % crate slider for playback
-           
+            
             T = 0: obj.dt : time;
-%              u = uicontrol('Style','slider','Position',[10 50 20 340],...
-%                 'Min',1,'Max',16,'Value',1);         
+            %              u = uicontrol('Style','slider','Position',[10 50 20 340],...
+            %                 'Min',1,'Max',16,'Value',1);
             
             K = zeros(1, length(T)); % kinetic energy
             V = zeros(1, length(T)); % potential energy
@@ -46,10 +46,10 @@ classdef simulator < handle
             for i = 1:length(T)
                 
                 t = T(i);
-                [ke, pe] = obj.step();   
+                [ke, pe] = obj.step();
                 
-                 V(i) = pe;
-                 K(i) = ke;
+                V(i) = pe;
+                K(i) = ke;
                 
                 % desired frame rate is 25 frame/s meaning meaning we need one
                 % frame every other 0.04 sec (every other 0.04/dt frames)
@@ -61,7 +61,7 @@ classdef simulator < handle
                     drawnow
                     frames(k) = getframe(fig);  %#ok<AGROW>
                 end
-            end          
+            end
         end
         
         function [ke, pe] = step(obj)

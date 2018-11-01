@@ -25,15 +25,19 @@ classdef robot1 < handle
                 % create 8 point masses
                 mass = 0.1; % m
                 cube_size = 0.1; % m
-                z_offset = 0.3; % m
+                z_offset = 0.3; % m          
                
                 % create positions of masses in the cube
                 p = ones(8, 3)/2;
                 p(1:4, 3) = 0;
                 p([2:3,6:7], 1) = -p([2:3,6:7], 1);
                 p([3:4,7:8], 2) = -p([3:4,7:8], 2);
+                p(5:8, 3) = 2*p(5:8, 3);
                 p = p*cube_size;
-                p(:, 3) = 2*p(:, 3) + z_offset;
+                
+                R = obj.rotationAxisAngle([1 0 0], pi/6); % tile around x axis by 30 degree
+                p = R*p'; % tilt all masses
+                p = p' + [0 0 z_offset]; % add the offset; 
                 
                 obj.masses = point_mass(repmat(mass, size(p,1), 1), p);
                 
@@ -157,6 +161,21 @@ classdef robot1 < handle
                     my_masses(i).v(2)^2 + my_masses(i).v(3)^2);
             end
         end
+        
+        function S = skew(~, v)
+           % vec: 3 x 1 vector column
+            S = [0 -v(3) v(2); v(3) 0 -v(1); -v(2) v(1) 0];
+        end
+        
+        function R = rotationAxisAngle(obj, axis, angle)
+           % axis:  double 3 x 1 vector
+           % angle: double
+           axis = [axis(1) axis(2), axis(3)]';
+           axis = axis/vecnorm(axis);
+           c = cos(angle); s = sin(angle); v = 1 - c;
+           R = eye(3)*c + obj.skew(axis)*s + axis*axis'*v;
+        end
+        
     end
 end
 
