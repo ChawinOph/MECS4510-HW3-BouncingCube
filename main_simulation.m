@@ -16,7 +16,7 @@ close
 % movie(frames, 1, 25); % run 1 time at 25 fps
 
 % export to video
-myVideo = VideoWriter('boucing_cube.avi');
+myVideo = VideoWriter('bouncing_cube.avi');
 myVideo.FrameRate = 25;  % Default 30
 myVideo.Quality = 100;    % Default 75
 open(myVideo);

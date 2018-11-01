@@ -1,7 +1,6 @@
 classdef robot1 < handle
     %ROBOT This class represents 
     %   It's essentially a body consisting of masses connected by springs
-    
     properties
         masses % Array of point_mass objects
         springs % Array of spring objects
