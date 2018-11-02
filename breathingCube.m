@@ -1,10 +1,10 @@
-function cube = breathingCube(dt)
+function cube = breathingCube()
     % create 8 point masses
     mass = 0.1; % m
     cube_size = 0.1; % m
     z_offset = 0.0; % m 
     k = 500;
-    %                 v_init = [0.5, 0, 0]; % m/s
+    % v_init = [0.5, 0, 0]; % m/s
     v_init = [0, 0, 0];
 
     % create positions of masses in the cube
@@ -12,7 +12,7 @@ function cube = breathingCube(dt)
     p(1:4, 3) = 0;
     p([2:3,6:7], 1) = -p([2:3,6:7], 1);
     p([3:4,7:8], 2) = -p([3:4,7:8], 2);
-    p(5:8, 3) = 2*p(5:8, 3)
+    p(5:8, 3) = 2*p(5:8, 3);
     p = p*cube_size;
 
 %     R = obj.rotationAxisAngle([1 0 0], pi/6); % tile around x axis by 30 degree
@@ -38,7 +38,7 @@ function cube = breathingCube(dt)
     acts(23,:) = [L_0(23)/2, 4, 0];
     acts(28,:) = [L_0(28)/2, 4, 0];
     springs = spring(L_0, K, comb_indcs, acts);  
-    sprind = reshape([springs.m], 2, 28)
+%     sprind = reshape([springs.m], 2, 28);
     cube = robot1(masses, springs);
     
 end

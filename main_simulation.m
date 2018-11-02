@@ -4,11 +4,11 @@ clear
 close all
 tic;
 % create an instance of simulator with a robot object
-dt = 0.0005; 
+dt = 0.00005; 
 % cube = robot1();
-cube = breathingCube(dt);
+cube = breathingCube();
 sim = simulator(cube(), dt);
-run_time = 3.14; % seconds
+run_time = 5; % seconds
 
 [frames, K, V] = sim.simulate(run_time); 
 close
@@ -25,7 +25,8 @@ writeVideo(myVideo, frames);
 close(myVideo);
 
 figure;
-plot(0:dt:run_time, K, 0:dt:run_time, V, 0:dt:run_time, K + V)
+plot(0:dt:run_time, K, 0:dt:run_time, V); hold on;
+plot(0:dt:run_time, K + V, '--k', 'LineWidth', 2)
 xlabel('Time (s)')
 ylabel('Energy (J)')
 legend('KE','PE','KE + PE');

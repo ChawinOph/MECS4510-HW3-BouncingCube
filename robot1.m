@@ -4,8 +4,6 @@ classdef robot1 < handle
     properties
         masses % Array of point_mass objects
         springs % Array of spring objects
-        rho % Double. Velocity damping parameter (0<p<1)
-        k = 500; % Double. N/m
     end
     
     methods
@@ -27,6 +25,7 @@ classdef robot1 < handle
                 z_offset = 0.3; % m 
 %                 v_init = [0.5, 0, 0]; % m/s
                 v_init = [0, 0, 0];
+                k = 500; % Double. N/m
                
                 % create positions of masses in the cube
                 p = ones(8, 3)/2;
@@ -45,12 +44,13 @@ classdef robot1 < handle
                 % create springs based the available point masses
                 comb_indcs = combnk(1:length(obj.masses), 2);
                 L_0 = zeros(size(comb_indcs, 1), 1);
-                K = obj.k*ones(size(comb_indcs, 1), 1); 
+                K = k*ones(size(comb_indcs, 1), 1); 
                 for i = 1:length(comb_indcs)
                     pair_indcs = comb_indcs(i,:);
                     L_0(i) = vecnorm(obj.masses(pair_indcs(1)).p - obj.masses(pair_indcs(2)).p);
                 end
-                obj.springs = spring(L_0, K, comb_indcs);               
+                obj.springs = spring(L_0, K, comb_indcs);   
+                
             end
         end
         
@@ -86,7 +86,7 @@ classdef robot1 < handle
             my_masses = obj.masses;
             my_springs = obj.springs;
             forces = zeros(length(my_masses), 3);
-            parfor i = 1:length(my_masses)
+            for i = 1:length(my_masses)
                 % add gravitational force
                 forces(i,:) = my_masses(i).mass * g + f_ext(i,:);
                 % go through all springs in the robot
@@ -99,7 +99,7 @@ classdef robot1 < handle
                         pair_indcs = my_springs(j).m;      
                         vector = my_masses(pair_indcs(1)).p - my_masses(pair_indcs(2)).p;
                         L = vecnorm(vector);
-                        act = my_springs(j).act
+                        act = my_springs(j).act;
                         L_act = my_springs(j).L_0 + act(1)*sin(act(2)*t + act(3));
                         spring_f = my_springs(j).k*(L - L_act);
                         
@@ -130,11 +130,9 @@ classdef robot1 < handle
             a = zeros(size(f,1), size(f,2));
             v = a;
             p = v;
-            parfor i = 1:length(my_masses)
+            for i = 1:length(my_masses)
                 a(i,:) = f(i,:) / my_masses(i).mass;
                 v(i,:) = my_masses(i).v + a(i,:)*dt;
-                % a is not constant, so we cannot use the 0.5*a*t^2 term
-                %                 p(i,:) = my_masses(i).p + my_masses(i).v*dt + 0.5*my_masses(i).a*dt^2;
                 p(i,:) = my_masses(i).p + v(i,:)*dt;
             end
         end
@@ -152,7 +150,7 @@ classdef robot1 < handle
                 pair_indcs = my_springs(i).m;
                 vector = my_masses(pair_indcs(1)).p - my_masses(pair_indcs(2)).p;
                 L = vecnorm(vector);
-                pe = pe + 0.5*obj.k*(L - my_springs(i).L_0).^2;
+                pe = pe + 0.5*my_springs(i).k*(L - my_springs(i).L_0).^2;
             end
             % GRF energy will be summed in the simulation object
         end

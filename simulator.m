@@ -4,8 +4,7 @@ classdef simulator < handle
     properties (Constant)
         g = [0, 0, -9.81]; % Double array. Gravitational acceleration (m/s^2)
         rho = 1; % Double. Global velocity damping parameter (0<p<1)
-        k_ground = 2500; % contact force constant
-        
+        k_ground = 2500; % contact force constant      
     end
     
     properties
@@ -26,14 +25,13 @@ classdef simulator < handle
                         disp('Too many arguments for simulator');
                     end
                 end
-            end
-            
+            end            
         end
         
         function [frames, K, V] = simulate(obj, time)
             % SIMULATE run the simulation over a period of 'time' in
             % seconds and record the animation for playback in 'frames'
-            fig = figure('rend','painters','pos',[10 10 900 600]);
+            fig = figure('pos',[10 10 900 600]);
             % crate slider for playback
             
             T = 0: obj.dt : time;
@@ -47,7 +45,7 @@ classdef simulator < handle
             
             for i = 1:length(T)
                 
-                t = T(i);
+                t_step = T(i);
                 [ke, pe] = obj.step();
                 
                 V(i) = pe;
@@ -55,11 +53,11 @@ classdef simulator < handle
                 
                 % desired frame rate is 25 frame/s meaning meaning we need one
                 % frame every other 0.04 sec (every other 0.04/dt frames)
-                if mod(t, 0.04) == 0
+                if mod(t_step, 0.04) == 0
                     k = k + 1;
                     clf;
                     obj.drawRobots();
-                    text(0.4, 0.4, 0.4, ['t = ' num2str(t) ' sec']);
+                    text(0.4, 0.4, 0.4, ['t = ' num2str(t_step) ' sec']);
                     drawnow
                     frames(k) = getframe(fig);  %#ok<AGROW>
                 end
