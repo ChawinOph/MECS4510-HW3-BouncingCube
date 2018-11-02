@@ -1,8 +1,8 @@
-function cube = breathingTetrahedron()
+function tetra = breathingTetrahedron()
     % create 8 point masses
     mass = 0.1; % m
     cube_size = 0.1; % m
-    z_offset = 0.0; % m 
+    z_offset = 0.2; % m 
     k = 500;
     % v_init = [0.5, 0, 0]; % m/s
     v_init = [0, 0, 0];
@@ -14,8 +14,10 @@ function cube = breathingTetrahedron()
     p([3:4,7:8], 2) = -p([3:4,7:8], 2);
     p(5:8, 3) = 2*p(5:8, 3);
     p = p*cube_size;
+    % use only four corners to create the tetrahedron
+    p = p([2 4 5 7], :);
 
-%     R = obj.rotationAxisAngle([1 0 0], pi/6); % tile around x axis by 30 degree
+%     R = rotationAxisAngle([1 0 0], pi/6); % tile around x axis by 30 degree
     R = eye(3); % Don't tilt
     p = R*p'; % tilt all masses
     p = p' + [0 0 z_offset]; % add the offset; 
@@ -33,12 +35,12 @@ function cube = breathingTetrahedron()
     
     % create actuation parameters for the springs
     acts = zeros(length(L_0), 3);
-    acts(1,:) = [L_0(1)/2, 4, 0];
-    acts(14,:) = [L_0(14)/2, 4, 0];
-    acts(23,:) = [L_0(23)/2, 4, 0];
-    acts(28,:) = [L_0(28)/2, 4, 0];
+%     acts(1,:) = [L_0(1)/2, 4, 0];
+%     acts(6,:) = [L_0(6)/2, 4, 0];
+%     acts(23,:) = [L_0(23)/2, 4, 0];
+%     acts(28,:) = [L_0(28)/2, 4, 0];
     springs = spring(L_0, K, comb_indcs, acts);  
-%     sprind = reshape([springs.m], 2, 28);
-    cube = robot1(masses, springs);
+%     sprind = reshape([springs.m], 2, [])
+    tetra = robot1(masses, springs);
     
 end
