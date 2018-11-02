@@ -5,7 +5,7 @@ classdef robot1 < handle
         masses % Array of point_mass objects
         springs % Array of spring objects
         rho % Double. Velocity damping parameter (0<p<1)
-        k = 500; % N/m
+        k = 500; % Double. N/m
     end
     
     methods
@@ -79,14 +79,14 @@ classdef robot1 < handle
             [obj.masses.a] = A{:};
         end
         
-        function forces = calcForces(obj, g, f_ext)
+        function forces = calcForces(obj, g, f_ext, t)
             %CALCFORCES Calculates the vector forces on each mass
             %   g is the gravitational constant (1x3 vector)
             %   f are additional forces on the nodes (num_masses x 3 array)
             my_masses = obj.masses;
             my_springs = obj.springs;
             forces = zeros(length(my_masses), 3);
-            for i = 1:length(my_masses)
+            parfor i = 1:length(my_masses)
                 % add gravitational force
                 forces(i,:) = my_masses(i).mass * g + f_ext(i,:);
                 % go through all springs in the robot
@@ -99,9 +99,12 @@ classdef robot1 < handle
                         pair_indcs = my_springs(j).m;      
                         vector = my_masses(pair_indcs(1)).p - my_masses(pair_indcs(2)).p;
                         L = vecnorm(vector);
-                        spring_f = my_springs(j).k*(L - my_springs(j).L_0);
+                        act = my_springs(j).act
+                        L_act = my_springs(j).L_0 + act(1)*sin(act(2)*t + act(3));
+                        spring_f = my_springs(j).k*(L - L_act);
                         
                         % create the force vector with correct direction
+                        spring_v = 0;
                         if my_springs(j).m(1) == i
                             spring_v = -spring_f*vector/L;
                         elseif my_springs(j).m(2) == i
@@ -127,7 +130,7 @@ classdef robot1 < handle
             a = zeros(size(f,1), size(f,2));
             v = a;
             p = v;
-            for i = 1:length(my_masses)
+            parfor i = 1:length(my_masses)
                 a(i,:) = f(i,:) / my_masses(i).mass;
                 v(i,:) = my_masses(i).v + a(i,:)*dt;
                 % a is not constant, so we cannot use the 0.5*a*t^2 term

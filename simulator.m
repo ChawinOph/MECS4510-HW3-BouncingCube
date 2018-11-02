@@ -5,11 +5,13 @@ classdef simulator < handle
         g = [0, 0, -9.81]; % Double array. Gravitational acceleration (m/s^2)
         rho = 1; % Double. Global velocity damping parameter (0<p<1)
         k_ground = 2500; % contact force constant
+        
     end
     
     properties
         bots % Array of type robot1. Represents the bodies in the system
         dt % Double. Length of one time-step (in seconds)
+        t = 0; % Double. Current time (sec)
     end
     
     methods
@@ -85,7 +87,7 @@ classdef simulator < handle
                 f_ext = f_contact;
                 
                 % calculate kinematic variables
-                forces = obj.bots(bot_no).calcForces(obj.g, f_ext);
+                forces = obj.bots(bot_no).calcForces(obj.g, f_ext, obj.t);
                 [a, v, p] = obj.bots(bot_no).calcKin(forces, obj.dt);
                 
                 % update all kinematic variables
@@ -96,6 +98,9 @@ classdef simulator < handle
                 % get energy
                 ke = obj.bots(bot_no).calcKE();
                 pe = obj.bots(bot_no).calcPE(obj.g) + pe_contact;
+                
+                % update time
+                obj.t = obj.t + obj.dt;
             end
         end
         

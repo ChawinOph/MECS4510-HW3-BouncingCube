@@ -1,13 +1,14 @@
-%% 
+
 clc
 clear
 close all
-
+tic;
 % create an instance of simulator with a robot object
 dt = 0.0005; 
-cube = robot1();
+% cube = robot1();
+cube = breathingCube(dt);
 sim = simulator(cube(), dt);
-run_time = 5; % seconds
+run_time = 3.14; % seconds
 
 [frames, K, V] = sim.simulate(run_time); 
 close
@@ -16,7 +17,7 @@ close
 % movie(frames, 1, 25); % run 1 time at 25 fps
 
 % export to video
-myVideo = VideoWriter('bouncing_cube.avi');
+myVideo = VideoWriter('bouncing_cube5.avi');
 myVideo.FrameRate = 25;  % Default 30
 myVideo.Quality = 100;    % Default 75
 open(myVideo);
@@ -30,3 +31,4 @@ ylabel('Energy (J)')
 legend('KE','PE','KE + PE');
 grid on; grid minor;
 
+toc
