@@ -26,7 +26,7 @@ writeVideo(myVideo, frames);
 close(myVideo);
 
 figure;
-plot(0:dt:run_time, K, 0:dt:run_time, V); hold on;
+plot(0:dt:run_time, K, 0:dt:run_time, V, 'LineWidth', 1.5); hold on;
 plot(0:dt:run_time, K + V, '--k', 'LineWidth', 2)
 xlabel('Time (s)')
 ylabel('Energy (J)')
