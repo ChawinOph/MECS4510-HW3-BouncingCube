@@ -2,7 +2,7 @@ function cube = breathingCube()
     % create 8 point masses
     mass = 0.1; % m
     cube_size = 0.1; % m
-    z_offset = 0.0; % m 
+    z_offset = 0.3; % m 
     k = 500;
     % v_init = [0.5, 0, 0]; % m/s
     v_init = [0, 0, 0];
@@ -15,8 +15,8 @@ function cube = breathingCube()
     p(5:8, 3) = 2*p(5:8, 3);
     p = p*cube_size;
 
-%     R = obj.rotationAxisAngle([1 0 0], pi/6); % tile around x axis by 30 degree
-    R = eye(3); % Don't tilt
+    R = obj.rotationAxisAngle([1 0 0], pi/6); % tile around x axis by 30 degree
+%     R = eye(3); % Don't tilt
     p = R*p'; % tilt all masses
     p = p' + [0 0 z_offset]; % add the offset; 
 

@@ -5,9 +5,9 @@ close all
 %%
 tic;
 % create an instance of simulator with a robot object
-dt = 0.00005; 
-% cube = robot1();
-cube = breathingCube();
+dt = 0.0001; 
+cube = robot1();
+% cube = breathingCube();
 sim = simulator(cube(), dt);
 run_time = 5; % seconds
 

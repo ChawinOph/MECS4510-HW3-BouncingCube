@@ -3,8 +3,10 @@ classdef simulator < handle
     %   Detailed explanation goes here
     properties (Constant)
         g = [0, 0, -9.81]; % Double array. Gravitational acceleration (m/s^2)
-        rho = 1; % Double. Global velocity damping parameter (0<p<1)
-        k_ground = 2500; % contact force constant      
+        rho = 1; % Double. Global velocity damping parameter (0<p<=1)
+        k_ground = 2500; % contact force constant 
+        mu_s = 0.9; % static friction coefficient
+        mu_k = 0.5; % kinetic friction coefficient
     end
     
     properties
@@ -51,7 +53,7 @@ classdef simulator < handle
                 V(i) = pe;
                 K(i) = ke;
                 
-                % desired frame rate is 25 frame/s meaning meaning we need one
+                % desired frame rate is 25 frame/s meaning we need one
                 % frame every other 0.04 sec (every other 0.04/dt frames)
                 if mod(t_step, 0.04) == 0
                     k = k + 1;
@@ -74,9 +76,10 @@ classdef simulator < handle
                 
                 % check if there are any masses underneath the ground
                 if ~isempty(find(mass_pos_z < 0, 1))
-                    contact_inds = find(mass_pos_z < 0);
+                    contact_inds = find(mass_pos_z < 0);                   
                     % calculate the restoration force
                     f_contact(contact_inds, 3) = -obj.k_ground*mass_pos_z(contact_inds);
+                    
                     pe_contact = 1/2*obj.k_ground*sum(abs(mass_pos_z(contact_inds).^2));
                 else
                     pe_contact = 0;
@@ -86,7 +89,9 @@ classdef simulator < handle
                 
                 % calculate kinematic variables
                 forces = obj.bots(bot_no).calcForces(obj.g, f_ext, obj.t);
-                [a, v, p] = obj.bots(bot_no).calcKin(forces, obj.dt);
+                
+                % check the friction on the masses in contact
+                [a, v, p] = obj.bots(bot_no).calcKin(forces, obj.dt, obj.mu_s, obj.mu_k);
                 
                 % update all kinematic variables
                 obj.bots(bot_no).updateP(p);

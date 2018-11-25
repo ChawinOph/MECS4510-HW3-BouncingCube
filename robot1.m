@@ -22,7 +22,7 @@ classdef robot1 < handle
                 % create 8 point masses
                 mass = 0.1; % m
                 cube_size = 0.1; % m
-                z_offset = 0.3; % m 
+                z_offset = 0.4; % m 
 %                 v_init = [0.5, 0, 0]; % m/s
                 v_init = [0, 0, 0];
                 k = 500; % Double. N/m
@@ -37,20 +37,28 @@ classdef robot1 < handle
                 
                 R = obj.rotationAxisAngle([1 0 0], pi/6); % tile around x axis by 30 degree
                 p = R*p'; % tilt all masses
-                p = p' + [0 0 z_offset]; % add the offset; 
+                p = p' + [0 0 z_offset]; % add the offset;
                 
-                obj.masses = point_mass(repmat(mass, size(p,1), 1), p, repmat(v_init, 8, 1));
+                obj.masses = point_mass(repmat(mass, size(p,1), 1), p, repmat(v_init, 8, 1));               
                 
                 % create springs based the available point masses
                 comb_indcs = combnk(1:length(obj.masses), 2);
                 L_0 = zeros(size(comb_indcs, 1), 1);
-                K = k*ones(size(comb_indcs, 1), 1); 
+                K = k*ones(size(comb_indcs, 1), 1);
                 for i = 1:length(comb_indcs)
                     pair_indcs = comb_indcs(i,:);
                     L_0(i) = vecnorm(obj.masses(pair_indcs(1)).p - obj.masses(pair_indcs(2)).p);
                 end
-                obj.springs = spring(L_0, K, comb_indcs);   
                 
+                % create actuation parameters for the springs
+                acts = zeros(length(L_0), 3);
+                
+%                 acts(1,:) = [L_0(1)/2, 4, 0];
+%                 acts(14,:) = [L_0(14)/2, 4, 0];
+%                 acts(23,:) = [L_0(23)/2, 4, 0];
+%                 acts(28,:) = [L_0(28)/2, 4, 0];
+                
+                obj.springs = spring(L_0, K, comb_indcs, acts);                
             end
         end
         
@@ -118,7 +126,7 @@ classdef robot1 < handle
             end           
         end
         
-        function [a, v, p] = calcKin(obj, f, dt)
+        function [a, v, p] = calcKin(obj, f, dt, mu_s, mu_k)
             %CALCKIN Calculates the kinematics of the robot (acceleration,
             %velocity, position) based of the forces
             %   f is the array of force vectors on all the masses (not just
@@ -127,13 +135,35 @@ classdef robot1 < handle
             %   v is the array of velocity vectors for all masses
             %   p is the array of position vectors for all masses
             my_masses = obj.masses;
+            mass_pos = reshape([obj.masses.p], 3, []);
+            mass_pos_z = mass_pos(3, :);
+            
             a = zeros(size(f,1), size(f,2));
             v = a;
             p = v;
+
+            % add friction
+            fixed_indcs = [];
+            if ~isempty(find(mass_pos_z < 0, 1))
+                contact_indcs = find(mass_pos_z < 0); 
+                % calculate the magnitude of the horizontal forces
+                f_h = vecnorm(f(contact_indcs, 1:2), 2, 2);
+                f_z = abs(f(contact_indcs, 3));
+                fixed_indcs = find(f_h < f_z*mu_s);
+            end
+              
             for i = 1:length(my_masses)
-                a(i,:) = f(i,:) / my_masses(i).mass;
-                v(i,:) = my_masses(i).v + a(i,:)*dt;
-                p(i,:) = my_masses(i).p + v(i,:)*dt;
+                if ismember(i, fixed_indcs)
+                    % not position update
+                    a(i,:) = 0;
+                    v(i,:) = 0;
+                    p(i,:) = my_masses(i).p;
+                    disp([num2str(i) ' is fixed']);
+                else
+                    a(i,:) = f(i,:) / my_masses(i).mass;
+                    v(i,:) = my_masses(i).v + a(i,:)*dt;
+                    p(i,:) = my_masses(i).p + v(i,:)*dt;
+                end
             end
         end
         
