@@ -30,7 +30,7 @@ classdef simulator < handle
             end            
         end
         
-        function [frames, K, V] = simulate(obj, time)
+        function [frames, K, V, COM] = simulate(obj, time)
             % SIMULATE run the simulation over a period of 'time' in
             % seconds and record the animation for playback in 'frames'
             fig = figure('pos',[10 10 900 600]);
@@ -42,16 +42,18 @@ classdef simulator < handle
             
             K = zeros(1, length(T)); % kinetic energy
             V = zeros(1, length(T)); % potential energy
+            COM = zeros(length(T), 3); % potential energy
             
             k = 0; % frame counter
             
             for i = 1:length(T)
                 
                 t_step = T(i);
-                [ke, pe] = obj.step();
+                [ke, pe, com_pos] = obj.step();
                 
                 V(i) = pe;
                 K(i) = ke;
+                COM(i, :) = com_pos;
                 
                 % desired frame rate is 25 frame/s meaning we need one
                 % frame every other 0.04 sec (every other 0.04/dt frames)
@@ -66,7 +68,7 @@ classdef simulator < handle
             end
         end
         
-        function [ke, pe] = step(obj)
+        function [ke, pe, com] = step(obj)
             % loop through all robots
             for bot_no = 1:length(obj.bots)
                 % calculate contact forces based on mass positions
@@ -101,6 +103,7 @@ classdef simulator < handle
                 % get energy
                 ke = obj.bots(bot_no).calcKE();
                 pe = obj.bots(bot_no).calcPE(obj.g) + pe_contact;
+                com = obj.bots(bot_no).calcCOM();
                 
                 % update time
                 obj.t = obj.t + obj.dt;

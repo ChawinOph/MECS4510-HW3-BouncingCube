@@ -22,7 +22,7 @@ classdef robot1 < handle
                 % create 8 point masses
                 mass = 0.1; % m
                 cube_size = 0.1; % m
-                z_offset = 0.4; % m 
+                z_offset = 0.0; % m 
 %                 v_init = [0.5, 0, 0]; % m/s
                 v_init = [0, 0, 0];
                 k = 500; % Double. N/m
@@ -35,7 +35,8 @@ classdef robot1 < handle
                 p(5:8, 3) = 2*p(5:8, 3);
                 p = p*cube_size;
                 
-                R = obj.rotationAxisAngle([1 0 0], pi/6); % tile around x axis by 30 degree
+%                 R = obj.rotationAxisAngle([1 0 0], pi/6); % tile around x axis by 30 degree
+                R = eye(3);
                 p = R*p'; % tilt all masses
                 p = p' + [0 0 z_offset]; % add the offset;
                 
@@ -53,10 +54,10 @@ classdef robot1 < handle
                 % create actuation parameters for the springs
                 acts = zeros(length(L_0), 3);
                 
-%                 acts(1,:) = [L_0(1)/2, 4, 0];
-%                 acts(14,:) = [L_0(14)/2, 4, 0];
-%                 acts(23,:) = [L_0(23)/2, 4, 0];
-%                 acts(28,:) = [L_0(28)/2, 4, 0];
+                acts(1,:) = [L_0(1)/2, 4, 0];
+                acts(14,:) = [L_0(14)/2, 4, 0];
+                acts(23,:) = [L_0(23)/2, 4, 0];
+                acts(28,:) = [L_0(28)/2, 4, 0];
                 
                 obj.springs = spring(L_0, K, comb_indcs, acts);                
             end
@@ -158,7 +159,7 @@ classdef robot1 < handle
                     a(i,:) = 0;
                     v(i,:) = 0;
                     p(i,:) = my_masses(i).p;
-                    disp([num2str(i) ' is fixed']);
+%                     disp([num2str(i) ' is fixed']);
                 else
                     a(i,:) = f(i,:) / my_masses(i).mass;
                     v(i,:) = my_masses(i).v + a(i,:)*dt;
@@ -192,6 +193,11 @@ classdef robot1 < handle
                 ke = ke + 0.5*my_masses(i).mass*(my_masses(i).v(1)^2 + ...
                     my_masses(i).v(2)^2 + my_masses(i).v(3)^2);
             end
+        end
+        
+        function com_pos = calcCOM(obj)
+            mass_pos = reshape([obj.masses.p], 3, []);
+            com_pos = mean([obj.masses.mass].*mass_pos, 2);
         end
         
         function S = skew(~, v)
