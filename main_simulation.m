@@ -43,12 +43,12 @@ run_time = 5; % seconds
 [frames_tetra, K_tetra, V_tetra] = sim_tetra.simulate(run_time); 
 
 % export to video
-myVideo = VideoWriter('tetra.avi');
-myVideo.FrameRate = 25;  % Default 30
-myVideo.Quality = 100;    % Default 75
-open(myVideo);
-writeVideo(myVideo, frames_tetra);
-close(myVideo);
+% myVideo = VideoWriter('tetra.avi');
+% myVideo.FrameRate = 25;  % Default 30
+% myVideo.Quality = 100;    % Default 75
+% open(myVideo);
+% writeVideo(myVideo, frames_tetra);
+% close(myVideo);
 
 figure;
 plot(0:dt:run_time, K_tetra, 0:dt:run_time, V_tetra); hold on;
