@@ -12,7 +12,7 @@ classdef simulator < handle
     properties
         bots % Array of type robot1. Represents the bodies in the system
         dt % Double. Length of one time-step (in seconds)
-        t = 0; % Double. Current time (sec)
+        t = 0 % Double. current time
     end
     
     methods
@@ -37,8 +37,6 @@ classdef simulator < handle
             % crate slider for playback
             
             T = 0: obj.dt : time;
-            %              u = uicontrol('Style','slider','Position',[10 50 20 340],...
-            %                 'Min',1,'Max',16,'Value',1);
             
             K = zeros(1, length(T)); % kinetic energy
             V = zeros(1, length(T)); % potential energy
