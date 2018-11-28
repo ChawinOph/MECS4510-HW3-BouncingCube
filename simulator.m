@@ -5,8 +5,8 @@ classdef simulator < handle
         g = [0, 0, -9.81]; % Double array. Gravitational acceleration (m/s^2)
         rho = 1; % Double. Global velocity damping parameter (0<p<=1)
         k_ground = 2500; % contact force constant (2500 default)
-        mu_s = 0.5; % static friction coefficient (0.25 default)
-        mu_k = 0.25; % kinetic friction coefficient (0.1 default)
+        mu_s = 0.75; % static friction coefficient (0.25 default)
+        mu_k = 0.50; % kinetic friction coefficient (0.1 default)
     end
     
     properties
@@ -132,7 +132,7 @@ classdef simulator < handle
             
            
             axis equal;  grid on;
-            view(-10, 10)
+            view(-50, 25)
             xlim([-0.5 0.5]);
             ylim([-0.5 0.5]);
             zlim([-0.02 0.5]);
