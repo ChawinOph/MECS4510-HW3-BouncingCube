@@ -39,8 +39,15 @@ classdef starfish_robot < handle
             
             obj.gene = gene;
             obj.sorted_indcs = sorted_indcs;
-            % sort rows of parameter range in case we do linkage tightening
-            obj.param_range = obj.param_range(sorted_indcs,:);
+            
+            % sort rows of gene in case we do linkage tightening
+            % do the inverse operation of the sorting
+            unsorting_indcs = 1:length(sorted_indcs);
+            for i = 1:length(sorted_indcs)
+                unsorting_indcs(i) = find(sorted_indcs == i);
+            end
+            
+            obj.gene = obj.gene(unsorting_indcs,:);
 
             k = 500; % Double. N/m
             
