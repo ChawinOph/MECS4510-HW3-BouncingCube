@@ -15,7 +15,7 @@ run_time = 5; % seconds
 close
 
 % export to video
-myVideo = VideoWriter('crawling_cube.avi');
+myVideo = VideoWriter('crawling_snake.avi');
 myVideo.FrameRate = 25;  % Default 30
 myVideo.Quality = 100;    % Default 75
 open(myVideo);

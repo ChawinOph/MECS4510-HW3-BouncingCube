@@ -4,9 +4,9 @@ classdef simulator < handle
     properties (Constant)
         g = [0, 0, -9.81]; % Double array. Gravitational acceleration (m/s^2)
         rho = 1; % Double. Global velocity damping parameter (0<p<=1)
-        k_ground = 2500; % contact force constant 
-        mu_s = 0.9; % static friction coefficient
-        mu_k = 0.5; % kinetic friction coefficient
+        k_ground = 2500; % contact force constant (2500 default)
+        mu_s = 0.25; % static friction coefficient (0.25 default)
+        mu_k = 0.1; % kinetic friction coefficient (0.1 default)
     end
     
     properties
