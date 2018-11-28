@@ -10,7 +10,7 @@ dt = 0.001;
 
 % parameters
 gene = 0.5*ones(15, 1);
-sorted_indcs = 1:15; % for linkage tightening
+sorted_indcs = 1:15; % for linkage tightening (inversion)
 
 sim = simulator(starfish_robot(gene, sorted_indcs), dt);
 run_time = 5; % seconds
@@ -43,3 +43,6 @@ grid on; grid minor;
 
 toc
 
+for i = 1:5
+    
+end
