@@ -8,14 +8,14 @@ tic;
 dt = 0.001; 
 cube = robot1();
 % cube = breathingCube();
-sim = simulator(snake_robot(), dt);
+sim = simulator(starfish_robot(), dt);
 run_time = 5; % seconds
 
 [frames, K, V, COM] = sim.simulate(run_time); 
-close
+% close
 
 % export to video
-myVideo = VideoWriter('crawling_snake.avi');
+myVideo = VideoWriter('crawling_robot.avi');
 myVideo.FrameRate = 25;  % Default 30
 myVideo.Quality = 100;    % Default 75
 open(myVideo);

@@ -114,28 +114,91 @@ classdef simulator < handle
             % loop through all robots
             for bot_no = 1:length(obj.bots)
                 % get position of all point masses
-                mass_pos = reshape([obj.bots(bot_no).masses.p], 3, []);
-                scat = scatter3(mass_pos(1, :), mass_pos(2, :), mass_pos(3, :));
-                hold on;
-                scat.MarkerEdgeColor = 'k';
-                scat.MarkerFaceColor = 'b';
-                
+%                 mass_pos = reshape([obj.bots(bot_no).masses.p], 3, []);
+%                 scat = scatter3(mass_pos(1, :), mass_pos(2, :), mass_pos(3, :));
+%                 hold on;
+%                 scat.MarkerEdgeColor = 'k';
+%                 scat.MarkerFaceColor = 'b';
+
+                obj.drawAllStarfishDurface(bot_no)
+
                 % draw springs based on given pairs of mass indices
                 pair_indcs = reshape([obj.bots(bot_no).springs.m], 2, [])';
                 for i = 1:size(pair_indcs, 1)
                     pair_pos = reshape([obj.bots(bot_no).masses(pair_indcs(i, :)).p], 3, []);
-                    plot3(pair_pos(1, :), pair_pos(2, :), pair_pos(3, :), 'k')
+                    plot3(pair_pos(1, :), pair_pos(2, :), pair_pos(3, :), 'k'); hold on;
                 end
             end
             
-            % reframe the axes
-            axis equal; grid on;
+           
+            axis equal;  grid on;
+            view(3)
             xlim([-0.5 0.5]);
             ylim([-0.5 0.5]);
             zlim([-0.02 0.5]);
+            
+            % floor
+            [X,Y] = meshgrid([-0.5:0.1:0.5], [-0.5:0.1:0.5]);
+            Z = zeros(size(X));
+            h = surf(X,Y,Z);
+            h.FaceColor = 0.9*[1 1 1];
+            h.FaceLighting = 'gouraud';
+            
+            % add light 
+            lightangle(-45,30)
+            
             xlabel('x (m)')
             ylabel('y (m)')
             zlabel('z (m)')
+        end
+        
+        function drawSurface(~, vertex_pos)
+            h2 = fill3(vertex_pos(1,:), vertex_pos(2,:), vertex_pos(3,:), 'g');
+%             h2.FaceAlpha = 0.25;
+            h2.EdgeColor = 'none';
+            h2.FaceLighting = 'gouraud';
+        end
+        
+        function drawAllStarfishDurface(obj, bot_no)
+            mass_pos = reshape([obj.bots(bot_no).masses.p], 3, []);
+            % top surface
+            obj.drawSurface(mass_pos(:, [14 15 16 17])); hold on;
+            obj.drawSurface(mass_pos(:, [14 15 7]));
+            obj.drawSurface(mass_pos(:, [16 15 9]));
+            obj.drawSurface(mass_pos(:, [16 17 11]));
+            obj.drawSurface(mass_pos(:, [14 17 13]));
+            
+            % east leg
+            obj.drawSurface(mass_pos(:, [1 5 7])); 
+            obj.drawSurface(mass_pos(:, [1 6 7])); 
+            obj.drawSurface(mass_pos(:, [1 5 13])); 
+            obj.drawSurface(mass_pos(:, [1 6 13])); 
+            obj.drawSurface(mass_pos(:, [14 6 13])); 
+            obj.drawSurface(mass_pos(:, [14 6 7])); 
+            
+            % north leg
+            obj.drawSurface(mass_pos(:, [2 5 7])); 
+            obj.drawSurface(mass_pos(:, [2 7 8])); 
+            obj.drawSurface(mass_pos(:, [2 8 9])); 
+            obj.drawSurface(mass_pos(:, [2 5 9])); 
+            obj.drawSurface(mass_pos(:, [15 7 8])); 
+            obj.drawSurface(mass_pos(:, [15 8 9])); 
+            
+            % west leg
+            obj.drawSurface(mass_pos(:, [3 5 9])); 
+            obj.drawSurface(mass_pos(:, [3 9 10])); 
+            obj.drawSurface(mass_pos(:, [3 10 11])); 
+            obj.drawSurface(mass_pos(:, [3 5 11])); 
+            obj.drawSurface(mass_pos(:, [16 9 10])); 
+            obj.drawSurface(mass_pos(:, [16 10 11])); 
+            
+            % south leg
+            obj.drawSurface(mass_pos(:, [4 5 11])); 
+            obj.drawSurface(mass_pos(:, [4 11 12])); 
+            obj.drawSurface(mass_pos(:, [4 12 13])); 
+            obj.drawSurface(mass_pos(:, [4 5 13])); 
+            obj.drawSurface(mass_pos(:, [17 11 12])); 
+            obj.drawSurface(mass_pos(:, [17 12 13])); 
         end
         
     end
