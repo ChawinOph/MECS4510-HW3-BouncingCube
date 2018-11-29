@@ -8,9 +8,14 @@ sim = simulator();
 
 tic
 
-[frames, K, V, COM, fitness] = sim.simulate_and_plot(starfish_robot(genes)); 
-toc
-fitness1(end,:)
+
+% parameters
+gene = 0.5*ones(15, 1);
+sorted_indcs = 1:15; % for linkage tightening (inversion)
+
+sim = simulator(starfish_robot(gene, sorted_indcs), dt);
+run_time = 5; % seconds
+
 
 tic
 % [frames1, ~, ~, ~] = sim.simulate_and_plot(starfish_robot(genes)); 
@@ -34,6 +39,7 @@ xlabel('Time (s)')
 ylabel('Energy (J)')
 legend('KE','PE','KE + PE');
 grid on; grid minor;
+
 % 
 % figure 
 % plot(0:dt:run_time, COM); hold on;
@@ -42,3 +48,4 @@ grid on; grid minor;
 % legend('COM_x','COM_y','COM_z');
 % grid on; grid minor;
 % toc
+

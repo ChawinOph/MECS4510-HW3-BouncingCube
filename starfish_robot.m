@@ -32,6 +32,7 @@ classdef starfish_robot < handle
             %   Detailed explanation goes here
             % automically create 17 point masses and 56 springs
             
+
             % test nargin > 0 every time you create ane object array
             % otherwise it won't work
             % https://www.mathworks.com/help/matlab/matlab_oop/initialize-object-arrays.html
@@ -40,7 +41,6 @@ classdef starfish_robot < handle
                 mass = 0.1; % m
                 height = 0.2; % m (height of the robot)
                 omega = 0; % (0.5 Hz of breathing);
-
                 v_init = [0, 0, 0]; % m/s or [0.5, 0, 0]
                 z_offset = height/2; % m, dropping height from the lower edge of the robot
                 
