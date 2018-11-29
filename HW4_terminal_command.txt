@@ -1,12 +1,12 @@
 cd/
 c:
-cd Users\Chawin Ophaswongse\OneDrive\MechE MS-PhD\Courses\2018 Fall - MECS EVOLUTIONARY COMP and DESIGN AUTOM/HW4
+cd Users\Chawin Ophaswongse\OneDrive\MechE MS-PhD\Courses\2018 Fall - MECS EVOLUTIONARY COMP and DESIGN AUTOM\HW4
 git status
 
 % laptop
 cd/
 d:
-cd OneDrive\MechE MS-PhD\Courses\2018 Fall - MECS EVOLUTIONARY COMP and DESIGN AUTOM\HW3
+cd OneDrive\MechE MS-PhD\Courses\2018 Fall - MECS EVOLUTIONARY COMP and DESIGN AUTOM\HW4
 git status
 
 git add Robot.m

@@ -8,7 +8,7 @@ classdef starfish_robot < handle
     end
     
     properties (Constant)
-        param_range = [2000 5000;    % A spring stiffness
+        param_range = [1000 2500;    % A spring stiffness
             0  pi;       % B [k = |Asin(Bx + C)*sin(Dy + E)*sin(Fz + G)|]
             0  pi;       % C
             0  pi;       % D
@@ -60,35 +60,47 @@ classdef starfish_robot < handle
                     end
                     
                     % create four-body octahedron
-                    p = zeros(17, 3);
-                    p(14:17, 3) = height;
-                    p(5:13, 3) = height/2;
+%                     p = zeros(17, 3);
+%                     p(14:17, 3) = height;
+%                     p(5:13, 3) = height/2;
                     
-                    p(1, 1) = height/2;
-                    p(2, 2) = height/2;
-                    p(3, 1) = -height/2;
-                    p(4, 2) = -height/2;
+%                     p(1, 1) = height/2;
+%                     p(2, 2) = height/2;
+%                     p(3, 1) = -height/2;
+%                     p(4, 2) = -height/2;
                     
-                    p(7, 1:2) = height/2*[1,1];
-                    p(9, 1:2) = height/2*[-1,1];
-                    p(11, 1:2) = height/2*[-1,-1];
-                    p(13, 1:2) = height/2*[1,-1];
+%                     p(7, 1:2) = height/2*[1,1];
+%                     p(9, 1:2) = height/2*[-1,1];
+%                     p(11, 1:2) = height/2*[-1,-1];
+%                     p(13, 1:2) = height/2*[1,-1];
                     
-                    p(6, 1) = height;
-                    p(8, 2) = height;
-                    p(10, 1) = -height;
-                    p(12, 2) = -height;
+%                     p(6, 1) = height;
+%                     p(8, 2) = height;
+%                     p(10, 1) = -height;
+%                     p(12, 2) = -height;
+%                     
+%                     p(14, 1) = height/2;
+%                     p(15, 2) = height/2;
+%                     p(16, 1) = -height/2;
+%                     p(17, 2) = -height/2;
                     
-                    p(14, 1) = height/2;
-                    p(15, 2) = height/2;
-                    p(16, 1) = -height/2;
-                    p(17, 2) = -height/2;
+%                     spring_connect_indcs = [combnk([1 5 6 7 13 14], 2);
+%                         combnk([2 5 7 8  9 15], 2);
+%                         combnk([3 5 9 10 11 16], 2);
+%                         combnk([4 5 11 12 13 17],2);
+%                         combnk([14 15 16 17], 2)];
+
+                    % single octahedron
+                    p = zeros(6, 3);
+                    p(6, 3) = height;
+                    p(2:5, 3) = height/2;
                     
-                    spring_connect_indcs = [combnk([1 5 6 7 13 14], 2);
-                        combnk([2 5 7 8  9 15], 2);
-                        combnk([3 5 9 10 11 16], 2);
-                        combnk([4 5 11 12 13 17],2);
-                        combnk([14 15 16 17], 2)];
+                    p(2, 1) = height/2;
+                    p(3, 2) = height/2;
+                    p(4, 1) = -height/2;
+                    p(5, 2) = -height/2;
+                    
+                    spring_connect_indcs = combnk([1 2 3 4 5 6], 2);
                     
                     spring_connect_indcs = unique(spring_connect_indcs,'rows');
                     

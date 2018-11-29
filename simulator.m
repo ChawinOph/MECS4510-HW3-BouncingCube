@@ -167,7 +167,7 @@ classdef simulator < handle
 %                 scat.MarkerEdgeColor = 'k';
 %                 scat.MarkerFaceColor = 'b';
 
-                obj.drawAllStarfishDurface(bot_no)
+%                 obj.drawAllStarfishDurface(bot_no)
 
                 % draw springs based on given pairs of mass indices
                 pair_indcs = reshape([obj.bots(bot_no).springs.m], 2, [])';
