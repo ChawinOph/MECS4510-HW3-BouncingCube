@@ -30,11 +30,11 @@ for i = 2:g
     shuffle_ind = randperm(length(bots));
     bots = bots(shuffle_ind);
     fitnesses = fitnesses(shuffle_ind);
-    [children] = crossover2pt(bots);
+    [children] = starfish_robot(crossover2pt_gene([bots.gene]));
     
     child_fits = sim.evaluate(children);
     % Can I do this next section without the loop?
-    for j = 1:p
+    parfor j = 1:p
         if child_fits(j)>fitnesses(j)
             fitnesses(j) = child_fits(j);
             bots(j) = children(j);

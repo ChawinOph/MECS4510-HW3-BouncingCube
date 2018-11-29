@@ -1,0 +1,11 @@
+libemlrt.lib
+libcovrt.lib
+libut.lib
+libmwmathutil.lib
+/export:mexFunction
+/export:mexfilerequiredapiversion
+/export:emlrtMexFcnProperties
+/export:crossover2pt_gene
+/export:crossover2pt_gene_initialize
+/export:crossover2pt_gene_terminate
+/export:crossover2pt_gene_atexit
