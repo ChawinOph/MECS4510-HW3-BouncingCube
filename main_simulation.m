@@ -4,15 +4,12 @@ clear
 close all
 %%
 tic;
-% create an instance of simulator with a robot object
-dt = 0.001; 
-
 
 % parameters
 gene = 0.5*ones(15, 1);
 sorted_indcs = 1:15; % for linkage tightening (inversion)
 
-sim = simulator(starfish_robot(gene, sorted_indcs), dt);
+sim = simulator(starfish_robot(gene, sorted_indcs), 0.001);
 run_time = 5; % seconds
 
 [frames, K, V, COM] = sim.simulate(run_time); 
@@ -42,7 +39,3 @@ legend('COM_x','COM_y','COM_z');
 grid on; grid minor;
 
 toc
-
-for i = 1:5
-    
-end

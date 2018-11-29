@@ -5,14 +5,15 @@ classdef simulator < handle
         g = [0, 0, -9.81]; % Double array. Gravitational acceleration (m/s^2)
         rho = 1; % Double. Global velocity damping parameter (0<p<=1)
         k_ground = 2500; % contact force constant (2500 default)
-        mu_s = 0.75; % static friction coefficient (0.25 default)
-        mu_k = 0.50; % kinetic friction coefficient (0.1 default)
+        mu_s = 1; % static friction coefficient (0.25 default)
+        mu_k = 0.8; % kinetic friction coefficient (0.1 default)       
+        run_time = 5; % seconds
     end
     
     properties
         bots % Array of type robot1. Represents the bodies in the system
-        dt % Double. Length of one time-step (in seconds)
         t = 0 % Double. current time
+        dt = 0.005; 
     end
     
     methods

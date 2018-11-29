@@ -5,22 +5,25 @@ classdef starfish_robot < handle
         masses  % Array of point_mass objects
         springs % Array of spring objects
         gene    % normalized function paremeters [k,b,c]
-        param_range = [100 1000;    % A spring stiffness
+        sorted_indcs = 1:15
+    end
+    
+    properties (Constant)
+        param_range = [2000 5000;    % A spring stiffness
             0  pi;       % B [k = |Asin(Bx + C)*sin(Dy + E)*sin(Fz + G)|]
             0  pi;       % C
             0  pi;       % D
             0  pi;       % E
             0  pi;       % F
             0  pi;       % G
-            0  0.125;   % H amplitude (fraction of L_0)
-            0  0.125;   % I [b/L_0 = Hx + Iy + Jz + K]
-            0  0.125;   % J
-            0  0.125;   % K
-            -pi  pi;      % L phase
-            0  pi;      % M [c = Lx + My + Nz + O]
-            0  pi;      % N
-            0  pi];     % O
-        sorted_indcs = 1:15
+            -0.1  0.1;   % H amplitude (fraction of L_0)
+            -0.1  0.1;   % I [b/L_0 = Hx + Iy + Jz + K]
+            -0.1  0.1;   % J
+            -0.1  0.1;   % K
+            0  5*pi;      % L phase
+            0  5*pi;      % M [c = Lx + My + Nz + O]
+            0  5*pi;      % N
+            0  5*pi];     % O
     end
     
     methods
@@ -33,11 +36,11 @@ classdef starfish_robot < handle
             % global constants
             mass = 0.1; % m
             height = 0.1; % m (height of the robot)
-            omega = pi; % (0.5 Hz of breathing);
+            omega = 2*pi; % (0.5 Hz of breathing);
             v_init = [0, 0, 0]; % m/s or [0.5, 0, 0]
             z_offset = 0.0; % m, dropping height from the lower edge of the robot
             
-            for j = length(genes):-1:1
+            for j = size(gene,2):-1:1
                 obj(j).gene = gene;
                 if nargin>1
                     obj(j).sorted_indcs = sorted_indcs;

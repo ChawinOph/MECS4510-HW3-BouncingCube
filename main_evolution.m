@@ -1,13 +1,13 @@
 clc
 clear
-closeAll
+close all
 %%
 tic
 p = 100; % population
 g = 1000; % number of generations
 m = 0.05; % mutation rate
 %%
-genes = rand(p,15);
+genes = rand(15, p);
 bots = starfish_robot(genes);
 sim = simulator();
 best_bots = starfish_robot.empty(0,g)
@@ -20,7 +20,6 @@ end
 best_bots(1) = bots(end);
 
 for i = 2:g
-
     % crossover
     bots = bots(randperm(length(bots)));
     [children] = crossover2pt(bots);
