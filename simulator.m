@@ -13,7 +13,7 @@ classdef simulator < handle
     properties
         bots % Array of robots Represents the bodies in the system
         t = 0 % Double. current time
-        dt = 0.001; 
+        dt = 0.0001; 
     end
     
     methods
@@ -126,7 +126,6 @@ classdef simulator < handle
                     contact_inds = find(mass_pos_z < 0);                   
                     % calculate the restoration force
                     f_contact(contact_inds, 3) = -obj.k_ground*mass_pos_z(contact_inds);
-                    
                     pe_contact = 1/2*obj.k_ground*sum(abs(mass_pos_z(contact_inds).^2));
                 else
                     pe_contact = 0;
@@ -147,12 +146,11 @@ classdef simulator < handle
                 
                 % get energy
                 ke(:,bot_no) = obj.bots(bot_no).calcKE();
-                pe(:,bot_no) = obj.bots(bot_no).calcPE(obj.g) + pe_contact;
-                com(:,bot_no) = obj.bots(bot_no).calcCOM();
-                
-                % update time
-                obj.t = obj.t + obj.dt;
+                pe(:,bot_no) = obj.bots(bot_no).calcPE(obj.g, obj.t) + pe_contact;
+                com(:,bot_no) = obj.bots(bot_no).calcCOM();                        
             end
+            % update time
+            obj.t = obj.t + obj.dt;
         end
         
         %% VISUALIZATION
