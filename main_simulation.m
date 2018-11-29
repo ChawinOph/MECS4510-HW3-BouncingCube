@@ -3,7 +3,7 @@ clc
 clear
 close all
 %%
-genes = rand(15,2);
+genes = rand(15,5);
 sim = simulator();
 
 tic
@@ -12,7 +12,7 @@ toc
 
 
 % export to video
-myVideo = VideoWriter('crawling_robot1.avi');
+myVideo = VideoWriter('crawling_robot.avi');
 myVideo.FrameRate = 25;  % Default 30
 myVideo.Quality = 100;    % Default 75
 open(myVideo);

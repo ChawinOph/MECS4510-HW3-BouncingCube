@@ -41,7 +41,7 @@ classdef starfish_robot < handle
                 height = 0.1; % m (height of the robot)
                 omega = 2*pi; % (0.5 Hz of breathing);
                 v_init = [0, 0, 0]; % m/s or [0.5, 0, 0]
-                z_offset = 0.0; % m, dropping height from the lower edge of the robot
+                z_offset = 0.05; % m, dropping height from the lower edge of the robot
                 
                 for j = size(genes, 2):-1:1
                     
