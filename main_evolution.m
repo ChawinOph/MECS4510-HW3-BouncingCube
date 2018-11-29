@@ -3,7 +3,7 @@ clear
 close all
 %%
 tic
-p = 5; % population
+p = 6; % population
 g = 20; % number of generations
 m = 0.05; % mutation rate
 %%
@@ -53,3 +53,5 @@ for i = 2:g
     best_bots(i) = bots(end);
     fitness_hist(i) = M;
 end
+
+toc;
