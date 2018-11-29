@@ -1,15 +1,22 @@
 
-clc
-clear
-close all
+% clc
+% clear
+% close all
 %%
 genes = rand(15,5);
 sim = simulator();
 
 tic
-[frames1, ~, ~, ~] = sim.simulate_and_plot(starfish_robot(genes)); 
+% [frames1, ~, ~, ~] = sim.simulate_and_plot(starfish_robot(genes)); 
+[frames1, K1, V1, COM1, fitness1] = sim.simulate_and_plot(starfish_robot([bots(10:15).gene])); 
 toc
+fitness1(end,:)
 
+tic
+% [frames1, ~, ~, ~] = sim.simulate_and_plot(starfish_robot(genes)); 
+[K2, V2, COM2, fitness2] = sim.simulate(starfish_robot([bots(10:15).gene])); 
+toc
+fitness2(end,:)
 
 % export to video
 myVideo = VideoWriter('crawling_robot.avi');

@@ -1,4 +1,4 @@
-function [children] = crossover2pt(parents)
+function [children] = crossover2pt(parents) %#codegen
 % This crossover function takes a set of bots and returns a set of bots
 p = length(parents);
 cut = sort([randi(15, p, 1), randi(15, p, 1)],2);

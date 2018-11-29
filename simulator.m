@@ -5,8 +5,8 @@ classdef simulator < handle
         g = [0, 0, -9.81]; % Double array. Gravitational acceleration (m/s^2)
         rho = 1; % Double. Global velocity damping parameter (0<p<=1)
         k_ground = 2500; % contact force constant (2500 default)
-        mu_s = 1; % static friction coefficient (0.25 default)
-        mu_k = 0.8; % kinetic friction coefficient (0.1 default)       
+        mu_s = 0; %1; % static friction coefficient (0.25 default)
+        mu_k = 0; %0.8; % kinetic friction coefficient (0.1 default)       
         run_time = 5; % seconds
     end
     
@@ -149,10 +149,10 @@ classdef simulator < handle
                 ke(:,bot_no) = obj.bots(bot_no).calcKE();
                 pe(:,bot_no) = obj.bots(bot_no).calcPE(obj.g) + pe_contact;
                 com(:,bot_no) = obj.bots(bot_no).calcCOM();
-                
-                % update time
-                obj.t = obj.t + obj.dt;
+    
             end
+            % update time
+            obj.t = obj.t + obj.dt;
         end
         
         %% VISUALIZATION
