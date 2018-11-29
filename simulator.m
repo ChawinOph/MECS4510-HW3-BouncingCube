@@ -7,13 +7,13 @@ classdef simulator < handle
         k_ground = 2500; % contact force constant (2500 default)
         mu_s = 1; % static friction coefficient (0.25 default)
         mu_k = 0.8; % kinetic friction coefficient (0.1 default)       
-        run_time = 5; % seconds
+        run_time = 2; % seconds
     end
     
     properties
-        bots % Array of type robot1. Represents the bodies in the system
+        bots % Array of robots Represents the bodies in the system
         t = 0 % Double. current time
-        dt = 0.005; 
+        dt = 0.001; 
     end
     
     methods
@@ -31,28 +31,67 @@ classdef simulator < handle
             end            
         end
         
-        function [frames, K, V, COM] = simulate(obj, time)
+        function fitnesses = evaluate(obj, bots)
+            % create array of robot objects the same number as no. of gene
+            % columns (you have a choice to do one robot at a time by inputting just one gene)
+            [~, ~, ~, fitnesses] = obj.simulate(bots);
+        end
+        
+        function [K, V, COM, fitnesses] = simulate(obj, bots)
+            % SIMULATE run the simulation without the plot'
+            
+            obj.bots = bots;
+            
+            T = 0: obj.dt : obj.run_time;
+            
+            K = zeros(length(T), length(obj.bots)); % kinetic energy
+            V = zeros(length(T), length(obj.bots)); % potential energy
+            COM = zeros(length(T), 3, length(obj.bots)); % potential energy
+            
+            % reset timer
+            obj.t = 0;
+            
+            for i = 1:length(T)
+
+                [ke, pe, com_pos] = obj.step();      
+                V(i, :) = pe;
+                K(i, :) = ke;
+                COM(i, :, :) = reshape(com_pos, 1, 3, []);
+                
+            end
+            
+            fitnesses = reshape(vecnorm(COM(end , 1:2, :), 2, 2), 1, []);
+            
+        end
+        
+        function [frames, K, V, COM, fitness] = simulate_and_plot(obj, bots)
             % SIMULATE run the simulation over a period of 'time' in
             % seconds and record the animation for playback in 'frames'
+            
+            obj.bots = bots;
+            
             fig = figure('pos',[10 10 900 600]);
             % crate slider for playback
             
-            T = 0: obj.dt : time;
+            T = 0: obj.dt : obj.run_time;
             
-            K = zeros(1, length(T)); % kinetic energy
-            V = zeros(1, length(T)); % potential energy
-            COM = zeros(length(T), 3); % potential energy
+            K = zeros(length(T), length(obj.bots)); % kinetic energy
+            V = zeros(length(T), length(obj.bots)); % potential energy
+            COM = zeros(length(T), 3, length(obj.bots)); % potential energy
             
             k = 0; % frame counter
             
+            % reset timer
+            obj.t = 0;
+            
             for i = 1:length(T)
-                
-                t_step = T(i);
+               
+                t_step = T(i);     
                 [ke, pe, com_pos] = obj.step();
-                
-                V(i) = pe;
-                K(i) = ke;
-                COM(i, :) = com_pos;
+                    
+                V(i, :) = pe;
+                K(i, :) = ke;
+                COM(i, :, :) = reshape(com_pos, 1, 3, []);
                 
                 % desired frame rate is 25 frame/s meaning we need one
                 % frame every other 0.04 sec (every other 0.04/dt frames)
@@ -64,11 +103,18 @@ classdef simulator < handle
                     drawnow
                     frames(k) = getframe(fig);  %#ok<AGROW>
                 end
-            end
+                   
+            end         
+            
+            fitness = reshape(vecnorm(COM(end , 1:2, :), 2, 2), 1, []);
         end
         
         function [ke, pe, com] = step(obj)
             % loop through all robots
+            ke = zeros(1,length(obj.bots));
+            pe = zeros(1,length(obj.bots));
+            com = zeros(3,length(obj.bots));
+            
             for bot_no = 1:length(obj.bots)
                 % calculate contact forces based on mass positions
                 f_contact = zeros(length(obj.bots(bot_no).masses), 3);
@@ -100,9 +146,9 @@ classdef simulator < handle
                 obj.bots(bot_no).updateA(a);        
                 
                 % get energy
-                ke = obj.bots(bot_no).calcKE();
-                pe = obj.bots(bot_no).calcPE(obj.g) + pe_contact;
-                com = obj.bots(bot_no).calcCOM();
+                ke(:,bot_no) = obj.bots(bot_no).calcKE();
+                pe(:,bot_no) = obj.bots(bot_no).calcPE(obj.g) + pe_contact;
+                com(:,bot_no) = obj.bots(bot_no).calcCOM();
                 
                 % update time
                 obj.t = obj.t + obj.dt;
@@ -130,8 +176,7 @@ classdef simulator < handle
                     plot3(pair_pos(1, :), pair_pos(2, :), pair_pos(3, :), 'k'); hold on;
                 end
             end
-            
-           
+                       
             axis equal;  grid on;
             view(-50, 25)
             xlim([-0.5 0.5]);

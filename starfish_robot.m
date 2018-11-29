@@ -5,7 +5,6 @@ classdef starfish_robot < handle
         masses  % Array of point_mass objects
         springs % Array of spring objects
         gene    % normalized function paremeters [k,b,c]
-        sorted_indcs = 1:15
     end
     
     properties (Constant)
@@ -20,111 +19,116 @@ classdef starfish_robot < handle
             -0.1  0.1;   % I [b/L_0 = Hx + Iy + Jz + K]
             -0.1  0.1;   % J
             -0.1  0.1;   % K
-            0  5*pi;      % L phase
-            0  5*pi;      % M [c = Lx + My + Nz + O]
-            0  5*pi;      % N
-            0  5*pi];     % O
+            0  5*pi;     % L phase
+            0  5*pi;     % M [c = Lx + My + Nz + O]
+            0  5*pi;     % N
+            0  5*pi];    % O
     end
     
     methods
         % Constructor
-        function obj = starfish_robot(gene, sorted_indcs)
+        function obj = starfish_robot(genes, sorted_indcs)
             %SNAKE_ROBOT Construct an instance of robot1
             %   Detailed explanation goes here
             % automically create 17 point masses and 56 springs
             
-            % global constants
-            mass = 0.1; % m
-            height = 0.1; % m (height of the robot)
-            omega = 2*pi; % (0.5 Hz of breathing);
-            v_init = [0, 0, 0]; % m/s or [0.5, 0, 0]
-            z_offset = 0.0; % m, dropping height from the lower edge of the robot
-            
-            for j = size(gene,2):-1:1
-                obj(j).gene = gene;
-                if nargin>1
-                    obj(j).sorted_indcs = sorted_indcs;
-                end
-                % sort rows of gene in case we do linkage tightening
-                % do the inverse operation of the sorting
-                unsorting_indcs = 1:length(sorted_indcs);
-                for i = 1:length(sorted_indcs)
-                    unsorting_indcs(i) = find(sorted_indcs == i);
-                end
-
-                obj(j).gene = obj(j).gene(unsorting_indcs,:);
-
-                k = 500; % Double. N/m
-
-                % create four-body octahedron
-                p = zeros(17, 3);
-                p(14:17, 3) = height;
-                p(5:13, 3) = height/2;
-
-                p(1, 1) = height/2;
-                p(2, 2) = height/2;
-                p(3, 1) = -height/2;
-                p(4, 2) = -height/2;
-
-                p(7, 1:2) = height/2*[1,1];
-                p(9, 1:2) = height/2*[-1,1];
-                p(11, 1:2) = height/2*[-1,-1];
-                p(13, 1:2) = height/2*[1,-1];
-
-                p(6, 1) = height;
-                p(8, 2) = height;
-                p(10, 1) = -height;
-                p(12, 2) = -height;
-
-                p(14, 1) = height/2;
-                p(15, 2) = height/2;
-                p(16, 1) = -height/2;
-                p(17, 2) = -height/2;
-
-                spring_connect_indcs = [combnk([1 5 6 7 13 14], 2);
-                    combnk([2 5 7 8  9 15], 2);
-                    combnk([3 5 9 10 11 16], 2);
-                    combnk([4 5 11 12 13 17],2);
-                    combnk([14 15 16 17], 2)];
-
-                spring_connect_indcs = unique(spring_connect_indcs,'rows');
-
-                % create spring based on the spring connection indices
-                L_0 = zeros(size(spring_connect_indcs, 1), 1);      
-
-                % spring center (position between two masses)
-                spring_center = zeros(size(spring_connect_indcs, 1), 3);
-                acts = zeros(size(spring_connect_indcs, 1), 3);
-
-                K_spring = k*ones(size(spring_connect_indcs, 1), 1);
-
-                % generate springs 
-                for i = 1:length(spring_connect_indcs)
-                    pair_indcs = spring_connect_indcs(i,:);
-                    L_0(i) = vecnorm(p(pair_indcs(1), :) - p(pair_indcs(2), :));
-                    spring_center(i, :) = mean(p(pair_indcs, :));
-
-                    K_spring(i) = obj.calcK(spring_center(i, :));
-                    b = obj.calcB(spring_center(i,:));
-                    c = obj.calcC(spring_center(i,:));
-
-        %                 acts(i,;)
-                    acts(i,:) = [L_0(i)*b, omega, c];
-                end
-
-                obj(j).springs = spring(L_0, K_spring, spring_connect_indcs, acts);
-
-                % change the position and orientation of the robot after
-                % constructing the springs
-        %             R = obj.rotationAxisAngle([1 0 0], pi/6); % tile around x axis by 30 degree
-                R = eye(3);
-                p = R*p'; % tilt all masses
-                p = p' + [0 0 z_offset]; % add the offset;
-
-                obj(j).masses = point_mass(repmat(mass, size(p,1), 1), p, repmat(v_init, size(p,1), 1));
-
-                if ~validRobot(obj(j).masses, obj(j).springs)
-                    error('Not a valid combination of springs and masses');
+            % test nargin > 0 every time you create ane object array
+            % otherwise it won't work
+            % https://www.mathworks.com/help/matlab/matlab_oop/initialize-object-arrays.html
+            if nargin ~= 0
+                % global constants
+                mass = 0.1; % m
+                height = 0.1; % m (height of the robot)
+                omega = 2*pi; % (0.5 Hz of breathing);
+                v_init = [0, 0, 0]; % m/s or [0.5, 0, 0]
+                z_offset = 0.0; % m, dropping height from the lower edge of the robot
+                
+                for j = size(genes, 2):-1:1
+                    
+                    obj(j).gene = genes(:, j);
+                    
+                    if nargin > 1
+                        
+                        % sort rows of gene in case we do linkage tightening
+                        % do the inverse operation of the sorting
+                        % note: sorted_indcs is a 1d array
+                        unsorting_indcs = sorted_indcs;
+                        for i = 1:length(sorted_indcs)
+                            unsorting_indcs(i) = find(sorted_indcs == i);
+                        end
+                        obj(j).gene = obj(j).gene(unsorting_indcs,:);
+                    end
+                    
+                    % create four-body octahedron
+                    p = zeros(17, 3);
+                    p(14:17, 3) = height;
+                    p(5:13, 3) = height/2;
+                    
+                    p(1, 1) = height/2;
+                    p(2, 2) = height/2;
+                    p(3, 1) = -height/2;
+                    p(4, 2) = -height/2;
+                    
+                    p(7, 1:2) = height/2*[1,1];
+                    p(9, 1:2) = height/2*[-1,1];
+                    p(11, 1:2) = height/2*[-1,-1];
+                    p(13, 1:2) = height/2*[1,-1];
+                    
+                    p(6, 1) = height;
+                    p(8, 2) = height;
+                    p(10, 1) = -height;
+                    p(12, 2) = -height;
+                    
+                    p(14, 1) = height/2;
+                    p(15, 2) = height/2;
+                    p(16, 1) = -height/2;
+                    p(17, 2) = -height/2;
+                    
+                    spring_connect_indcs = [combnk([1 5 6 7 13 14], 2);
+                        combnk([2 5 7 8  9 15], 2);
+                        combnk([3 5 9 10 11 16], 2);
+                        combnk([4 5 11 12 13 17],2);
+                        combnk([14 15 16 17], 2)];
+                    
+                    spring_connect_indcs = unique(spring_connect_indcs,'rows');
+                    
+                    % create spring based on the spring connection indices
+                    L_0 = zeros(size(spring_connect_indcs, 1), 1);
+                    
+                    % spring center (position between two masses)
+                    spring_center = zeros(size(spring_connect_indcs, 1), 3);
+                    acts = zeros(size(spring_connect_indcs, 1), 3);
+                    
+                    K_spring = zeros(size(spring_connect_indcs, 1), 1);
+                    
+                    % generate springs
+                    for i = 1:length(spring_connect_indcs)
+                        pair_indcs = spring_connect_indcs(i,:);
+                        L_0(i) = vecnorm(p(pair_indcs(1), :) - p(pair_indcs(2), :));
+                        spring_center(i, :) = mean(p(pair_indcs, :));
+                        
+                        K_spring(i) = obj(j).calcK(spring_center(i, :));
+                        b = obj(j).calcB(spring_center(i,:));
+                        c = obj(j).calcC(spring_center(i,:));
+                        
+                        acts(i,:) = [L_0(i)*b, omega, c];
+                    end
+                    
+                    obj(j).springs = spring(L_0, K_spring, spring_connect_indcs, acts);
+                    
+                    % change the position and orientation of the robot after
+                    % constructing the springs
+                    %             R = obj.rotationAxisAngle([1 0 0], pi/6); % tile around x axis by 30 degree
+                    R = eye(3);
+                    p = R*p'; % tilt all masses
+                    p = p' + [0 0 z_offset]; % add the offset;
+                    
+                    obj(j).masses = point_mass(repmat(mass, size(p,1), 1), p, repmat(v_init, size(p,1), 1));
+                    
+                    if ~validRobot(obj(j).masses, obj(j).springs)
+                        error('Not a valid combination of springs and masses');
+                    end
+                    
                 end
             end
         end

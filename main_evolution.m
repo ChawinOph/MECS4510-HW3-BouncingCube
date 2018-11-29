@@ -3,21 +3,27 @@ clear
 close all
 %%
 tic
-p = 100; % population
-g = 1000; % number of generations
+p = 5; % population
+g = 20; % number of generations
 m = 0.05; % mutation rate
 %%
 genes = rand(15, p);
 bots = starfish_robot(genes);
 sim = simulator();
-best_bots = starfish_robot.empty(0,g)
+best_bots = starfish_robot.empty(0,g);
 %%
-for i = 1:p
-    evaluate(bots(i));
-end
+% for i = 1:p
+%     evaluate(bots(i));
+% end
 
-[fitnesses, fit_ind] = sort([bots.fit]);
-best_bots(1) = bots(end);
+% [fitnesses, fit_ind] = sort([bots.fit]);
+% best_bots(1) = bots(end);
+
+fitness_hist = zeros(g,1);
+fitnesses = sim.evaluate(bots);
+[M,I] = max(fitnesses);
+best_bots(1) = bots(I);
+fitness_hist(1) = M;
 
 for i = 2:g
     % crossover
@@ -42,6 +48,8 @@ for i = 2:g
     end
         
     % record
-    [fitnesses, fit_ind] = sort([bots.fit]);
+    fitnesses = sim.evaluate(bots);
+    [M,I] = max(fitnesses);
     best_bots(i) = bots(end);
+    fitness_hist(i) = M;
 end
