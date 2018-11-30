@@ -68,7 +68,7 @@ for i = 2:g
     best_bots(i) = bots(I);
     fitness_hist(i) = M;
     fitness_all_hist(:,i) = fitnesses;
-    div(i) = sum(std(genes, 0, 2));
+    div(i) = sum(std([bots.genes], 0, 2));
 end
 
 toc;
