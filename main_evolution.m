@@ -1,14 +1,10 @@
-% clc
-% clear
-% close all
+clc
+clear
+close all
 %%
 tic
 p = 100; % population
-<<<<<<< HEAD
-g = 5; % number of generations
-=======
 g = 10; % number of generations
->>>>>>> 993b52bc09c28bf16faff4c816cb110a6afde0d2
 m = 0.05; % mutation rate
 %%
 genes = rand(15, p);
