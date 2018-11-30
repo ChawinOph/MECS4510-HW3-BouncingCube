@@ -78,7 +78,7 @@ figure;
 plot(fitness_hist)
 
 figure;
-plot(div)
+plot(fitness_hist)
 
 figure;
 scatter(reshape(repmat(1:g,p,1), [], 1), reshape(fitness_all_hist, [], 1))
