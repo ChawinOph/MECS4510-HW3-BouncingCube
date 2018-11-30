@@ -4,7 +4,7 @@ close all
 %%
 tic
 p = 100; % population
-g = 10; % number of generations
+g = 500; % number of generations
 m = 0.05; % mutation rate
 %%
 genes = rand(15, p);
@@ -70,7 +70,13 @@ end
 
 toc;
 disp('DONE!!!')
+
 figure;
 plot(fitness_hist)
+
+figure;
+scatter(reshape(repmat(1:g,p,1), [], 1), reshape(fitness_all_hist, [], 1))
+
+
 best_bot = starfish_robot(best_bots(end).gene);
 [~, K, V, COM, fitness] = sim.simulate_and_plot(best_bot);

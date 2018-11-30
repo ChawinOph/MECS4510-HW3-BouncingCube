@@ -169,7 +169,7 @@ classdef simulator < handle
 %                 scat.MarkerEdgeColor = 'k';
 %                 scat.MarkerFaceColor = 'b';
 
-%                 obj.drawAllStarfishDurface(bot_no)
+                obj.drawOctaSurface(bot_no)
 
 %                 draw springs based on given pairs of mass indices
                 pair_indcs = reshape([obj.bots(bot_no).springs.m], 2, [])';
@@ -181,12 +181,13 @@ classdef simulator < handle
                        
             axis equal;  grid on;
             view(-50, 25)
-            xlim([-0.5 0.5]);
-            ylim([-0.5 0.5]);
+            xlim([-1 1]);
+            ylim([-1 1]);
             zlim([-0.02 0.5]);
-            
+            xlm = xlim();
+            ylm = ylim();
             % floor
-            [X,Y] = meshgrid([-0.5:0.1:0.5], [-0.5:0.1:0.5]);
+            [X,Y] = meshgrid(xlm(1):0.1:xlm(2), ylm(1):0.1:(ylm(2)));
             Z = zeros(size(X));
             h = surf(X,Y,Z);
             h.FaceColor = 0.9*[1 1 1];
@@ -207,7 +208,7 @@ classdef simulator < handle
             h2.FaceLighting = 'gouraud';
         end
         
-        function drawAllStarfishDurface(obj, bot_no)
+        function drawAllStarfishSurface(obj, bot_no)
             mass_pos = reshape([obj.bots(bot_no).masses.p], 3, []);
             % top surface
             obj.drawSurface(mass_pos(:, [14 15 16 17])); hold on;
@@ -247,6 +248,20 @@ classdef simulator < handle
             obj.drawSurface(mass_pos(:, [4 5 13])); 
             obj.drawSurface(mass_pos(:, [17 11 12])); 
             obj.drawSurface(mass_pos(:, [17 12 13])); 
+        end
+        
+         function drawOctaSurface(obj, bot_no)
+            mass_pos = reshape([obj.bots(bot_no).masses.p], 3, []);
+            % top surface
+            obj.drawSurface(mass_pos(:, [1 2 3])); hold on;
+            obj.drawSurface(mass_pos(:, [1 3 4]));
+            obj.drawSurface(mass_pos(:, [1 4 5]));
+            obj.drawSurface(mass_pos(:, [1 5 2]));
+            obj.drawSurface(mass_pos(:, [6 2 3]));
+            obj.drawSurface(mass_pos(:, [6 3 4]));
+            obj.drawSurface(mass_pos(:, [6 4 5]));
+            obj.drawSurface(mass_pos(:, [6 5 2]));
+     
         end
         
     end
