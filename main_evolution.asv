@@ -1,9 +1,9 @@
-% clc
-% clear
-% close all
+clc
+clear
+close all
 %%
 tic
-p = 100; % population
+p = 50; % population
 g = 5; % number of generations
 m = 0.05; % mutation rate
 %%
@@ -36,7 +36,7 @@ for i = 2:g
     
     child_fits = evaluate(sim, children);
     % Can I do this next section without the loop?
-    for j = 1:p
+    parfor j = 1:p
         if child_fits(j)>fitnesses(j)
             fitnesses(j) = child_fits(j);
             bots(j) = children(j);
@@ -53,7 +53,7 @@ for i = 2:g
 %     end
     
     % mutation
-    for j = 1: m*p
+    for j = 1: 2
         gene = bots(j).gene;
         gene(randi(p)) = rand;
         bots(j) = starfish_robot(gene);
