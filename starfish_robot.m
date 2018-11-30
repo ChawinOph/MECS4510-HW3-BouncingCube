@@ -39,9 +39,9 @@ classdef starfish_robot < handle
                 % global constants
                 mass = 0.1; % m
                 height = 0.2; % m (height of the robot)
-                omega = 0; % (0.5 Hz of breathing);
+                omega = pi; % (0.5 Hz of breathing);
                 v_init = [0, 0, 0]; % m/s or [0.5, 0, 0]
-                z_offset = height/2; % m, dropping height from the lower edge of the robot
+                z_offset = 0; % m, dropping height from the lower edge of the robot
                 
                 for j = size(genes, 2):-1:1
                     
@@ -279,32 +279,32 @@ classdef starfish_robot < handle
             % add friction
             fixed_indcs = [];
             slide_indc = [];
-%             if ~isempty(find(mass_pos_z < 0, 1))
-%                 contact_indcs = find(mass_pos_z < 0);
-%                 % calculate the magnitude of the horizontal forces
-%                 f_h = vecnorm(f(contact_indcs, 1:2), 2, 2);
-%                 f_z = abs(f(contact_indcs, 3));
-%                 fixed_indcs = find(f_h <= f_z*mu_s);
-%                 slide_indc = find(f_h > f_z*mu_s);
-%             end
+            if ~isempty(find(mass_pos_z < 0, 1))
+                contact_indcs = find(mass_pos_z < 0);
+                % calculate the magnitude of the horizontal forces
+                f_h = vecnorm(f(contact_indcs, 1:2), 2, 2);
+                f_z = abs(f(contact_indcs, 3));
+                fixed_indcs = find(f_h <= f_z*mu_s);
+                slide_indc = find(f_h > f_z*mu_s);
+            end
             
             for i = 1:length(my_masses)
-%                 if ismember(i, fixed_indcs)
-%                     % not position update
-%                     a(i,:) = 0;
-%                     v(i,:) = 0;
-%                     p(i,:) = my_masses(i).p;
-%                 elseif ismember(i, slide_indc)
-%                     % add force from kinetic frictoin (opposite to horizontal v component)
-%                     f_z = abs(f(i, 3));
-%                     a(i,:) = (f(i,:) -  mu_k*f_z*([my_masses(i).v(1:2), 0]))/ my_masses(i).mass;
-%                     v(i,:) = my_masses(i).v + a(i,:)*dt;
-%                     p(i,:) = my_masses(i).p + v(i,:)*dt;
-%                 else % no contact with the ground
+                if ismember(i, fixed_indcs)
+                    % not position update
+                    a(i,:) = 0;
+                    v(i,:) = 0;
+                    p(i,:) = my_masses(i).p;
+                elseif ismember(i, slide_indc)
+                    % add force from kinetic frictoin (opposite to horizontal v component)
+                    f_z = abs(f(i, 3));
+                    a(i,:) = (f(i,:) -  mu_k*f_z*([my_masses(i).v(1:2), 0]))/ my_masses(i).mass;
+                    v(i,:) = my_masses(i).v + a(i,:)*dt;
+                    p(i,:) = my_masses(i).p + v(i,:)*dt;
+                else % no contact with the ground
                     a(i,:) = f(i,:) / my_masses(i).mass;
                     v(i,:) = my_masses(i).v + a(i,:)*dt;
                     p(i,:) = my_masses(i).p + v(i,:)*dt;
-%                 end
+                end
             end
         end
         
@@ -339,7 +339,7 @@ classdef starfish_robot < handle
         
         function com_pos = calcCOM(obj)
             mass_pos = reshape([obj.masses.p], 3, []);
-            com_pos = mean([obj.masses.mass].*mass_pos, 2);
+            com_pos = mean(mass_pos, 2);
         end
         
         function S = skew(~, v)

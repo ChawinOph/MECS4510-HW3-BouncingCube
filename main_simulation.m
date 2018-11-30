@@ -3,11 +3,11 @@ clc
 clear
 close all
 %%
-genes = rand(15,1);
+genes = rand(15,10);
 sim = simulator();
 
 tic
-[frames, K, V, COM, fitness] = sim.simulate_and_plot(starfish_robot(genes)); 
+[K, V, COM, fitness] = sim.simulate(starfish_robot(genes)); 
 toc
 
 

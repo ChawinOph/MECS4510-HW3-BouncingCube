@@ -3,8 +3,8 @@ clear
 close all
 %%
 tic
-p = 6; % population
-g = 20; % number of generations
+p = 100; % population
+g = 10; % number of generations
 m = 0.05; % mutation rate
 %%
 genes = rand(15, p);
@@ -20,21 +20,23 @@ best_bots = starfish_robot.empty(0,g);
 % best_bots(1) = bots(end);
 
 fitness_hist = zeros(g,1);
+fitness_all_hist = zeros(p,g);
 fitnesses = sim.evaluate(bots);
 [M,I] = max(fitnesses);
 best_bots(1) = bots(I);
 fitness_hist(1) = M;
+fitness_all_hist(:,1) = fitnesses;
 %%
 for i = 2:g
     % crossover
     shuffle_ind = randperm(length(bots));
     bots = bots(shuffle_ind);
     fitnesses = fitnesses(shuffle_ind);
-    [children] = starfish_robot(crossover2pt_gene([bots.gene]));
+    [children] = crossover2pt(bots);
     
     child_fits = sim.evaluate(children);
     % Can I do this next section without the loop?
-    parfor j = 1:p
+    for j = 1:p
         if child_fits(j)>fitnesses(j)
             fitnesses(j) = child_fits(j);
             bots(j) = children(j);
@@ -51,7 +53,7 @@ for i = 2:g
 %     end
     
     % mutation
-    for j = 1: 2
+    for j = 1: m*p
         gene = bots(j).gene;
         gene(randi(p)) = rand;
         bots(j) = starfish_robot(gene);
@@ -61,8 +63,14 @@ for i = 2:g
     % record
 %     fitnesses = sim.evaluate(bots); %No point to recalculate this
     [M,I] = max(fitnesses);
-    best_bots(i) = bots(end);
+    best_bots(i) = bots(I);
     fitness_hist(i) = M;
+    fitness_all_hist(:,i) = fitnesses;
 end
 
 toc;
+disp('DONE!!!')
+figure;
+plot(fitness_hist)
+best_bot = starfish_robot(best_bots(end).gene);
+[~, K, V, COM, fitness] = sim.simulate_and_plot(best_bot);

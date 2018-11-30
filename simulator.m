@@ -5,15 +5,15 @@ classdef simulator < handle
         g = [0, 0, -9.81]; % Double array. Gravitational acceleration (m/s^2)
         rho = 1; % Double. Global velocity damping parameter (0<p<=1)
         k_ground = 2500; % contact force constant (2500 default)
-        mu_s = 1; % static friction coefficient (0.25 default)
-        mu_k = 0.8; % kinetic friction coefficient (0.1 default)       
-        run_time = 5; % seconds
+        mu_s = 0.5; % static friction coefficient (0.25 default)
+        mu_k = 0.25; % kinetic friction coefficient (0.1 default)       
+        run_time = 3; % seconds
     end
     
     properties
         bots % Array of robots Represents the bodies in the system
         t = 0 % Double. current time
-        dt = 0.0001; 
+        dt = 0.005; 
     end
     
     methods
@@ -120,7 +120,6 @@ classdef simulator < handle
                 f_contact = zeros(length(obj.bots(bot_no).masses), 3);
                 mass_pos = reshape([obj.bots(bot_no).masses.p], 3, []);
                 mass_pos_z = mass_pos(3, :);
-                
                 % check if there are any masses underneath the ground
                 if ~isempty(find(mass_pos_z < 0, 1))
                     contact_inds = find(mass_pos_z < 0);                   
@@ -130,20 +129,25 @@ classdef simulator < handle
                 else
                     pe_contact = 0;
                 end
-                
+               
                 f_ext = f_contact;
-                
+               
                 % calculate kinematic variables
+%                 tic
+%                 disp('calcForce')
                 forces = obj.bots(bot_no).calcForces(obj.g, f_ext, obj.t);
-                
+%                 toc
                 % check the friction on the masses in contact
+%                 tic
+%                 disp('calcKin')
                 [a, v, p] = obj.bots(bot_no).calcKin(forces, obj.dt, obj.mu_s, obj.mu_k);
-                
+%                 toc
                 % update all kinematic variables
+%                 tic
                 obj.bots(bot_no).updateP(p);
                 obj.bots(bot_no).updateV(obj.rho*v);
                 obj.bots(bot_no).updateA(a);        
-                
+%                 toc
                 % get energy
                 ke(:,bot_no) = obj.bots(bot_no).calcKE();
                 pe(:,bot_no) = obj.bots(bot_no).calcPE(obj.g, obj.t) + pe_contact;
@@ -167,7 +171,7 @@ classdef simulator < handle
 
 %                 obj.drawAllStarfishDurface(bot_no)
 
-                % draw springs based on given pairs of mass indices
+%                 draw springs based on given pairs of mass indices
                 pair_indcs = reshape([obj.bots(bot_no).springs.m], 2, [])';
                 for i = 1:size(pair_indcs, 1)
                     pair_pos = reshape([obj.bots(bot_no).masses(pair_indcs(i, :)).p], 3, []);
