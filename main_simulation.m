@@ -8,14 +8,8 @@ sim = simulator();
 
 tic
 
+[K, V, COM, fitness] = sim.simulate(starfish_robot(genes)); 
 
-% % parameters
-% gene = 0.5*ones(15, 10);
-% sorted_indcs = 1:15; % for linkage tightening (inversion)
-
-sim = simulator();
-run_time = 5; % seconds
-sim.simulate(starfish_robot(gene));
 toc
 
 % tic
